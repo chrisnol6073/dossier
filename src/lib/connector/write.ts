@@ -15,14 +15,14 @@ import { TONES } from "@/lib/tones";
 
 // An application written in Claude chat and saved through the connector
 // (#221, save_application): Claude reads the profile and the posting, writes
-// the tailored resume and cover letter itself, and Dossier keeps them as a
-// Draft application, as if it had written them. So Dossier needs no AI model
+// the tailored resume and cover letter itself, and Jobs Ireland keeps them as a
+// Draft application, as if it had written them. So Jobs Ireland needs no AI model
 // of its own for this. The parts are checked like the AI's: roles, projects
 // and degrees must be the profile's, skills its own skills, publications come
 // from the profile word for word, and with "Never invent experience" on,
 // names and numbers the profile and posting don't back are marked "check this".
 
-/** Shown as what wrote the documents, where Dossier would show a prompt version. */
+/** Shown as what wrote the documents, where Jobs Ireland would show a prompt version. */
 export const WRITTEN_IN_CLAUDE = "claude-chat";
 
 export const writtenResumeSchema = z.object({

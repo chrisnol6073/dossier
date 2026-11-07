@@ -1,7 +1,7 @@
-# Dossier with Docker Compose (see the installation guide, https://github.com/AienTech/dossier/wiki). Save this
+# Jobs Ireland with Docker Compose (see docs/EUROPE.md). Save this
 # file as compose.yml in a folder of its own, put POSTGRES_PASSWORD,
 # DOSSIER_PASSWORD (a hash of your password, from `docker run --rm -it
-# ghcr.io/aientech/dossier hash-password`) and DOSSIER_SECRET in a .env file
+# dossier-europe:local hash-password`) and DOSSIER_SECRET in a .env file
 # next to it, then:
 #
 #   docker compose up -d
@@ -26,7 +26,7 @@ services:
       retries: 10
 
   app:
-    image: ${DOSSIER_IMAGE:-ghcr.io/aientech/dossier:latest}
+    image: ${DOSSIER_IMAGE:-dossier-europe:local}
     restart: unless-stopped
     depends_on:
       db:
@@ -43,7 +43,7 @@ services:
       DOSSIER_AI_MODEL: ${DOSSIER_AI_MODEL:-}
       DOSSIER_AI_KEY: ${DOSSIER_AI_KEY:-}
       DOSSIER_AI_TIMEOUT_SECONDS: ${DOSSIER_AI_TIMEOUT_SECONDS:-}
-      # The daily usage ping: unset, Dossier asks after sign-in; on or off answers in advance (see Privacy in the wiki).
+      # The daily usage ping: unset, Jobs Ireland asks after sign-in; on or off answers in advance (see Privacy in the wiki).
       DOSSIER_TELEMETRY: ${DOSSIER_TELEMETRY:-}
       # Defaults for Settings → Job search.
       DOSSIER_JOBS_SOURCE: ${DOSSIER_JOBS_SOURCE:-}
@@ -59,7 +59,7 @@ services:
       # Gmail and Calendar: a Google OAuth client (or enter it in Settings → Google).
       DOSSIER_GOOGLE_CLIENT_ID: ${DOSSIER_GOOGLE_CLIENT_ID:-}
       DOSSIER_GOOGLE_CLIENT_SECRET: ${DOSSIER_GOOGLE_CLIENT_SECRET:-}
-      # The address Dossier is reached at, for Google's redirect.
+      # The address Jobs Ireland is reached at, for Google's redirect.
       DOSSIER_PUBLIC_URL: ${DOSSIER_PUBLIC_URL:-}
     # Only on the server itself: put a reverse proxy with HTTPS in front.
     ports:
@@ -74,7 +74,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   # A local model, with COMPOSE_PROFILES=ai in .env: `docker compose up -d`,
-  # then pull one (see "Choosing an AI provider" in the wiki). Dossier reaches it at http://ollama:11434.
+  # then pull one (see "Choosing an AI provider" in the wiki). Jobs Ireland reaches it at http://ollama:11434.
   ollama:
     profiles: [ai]
     image: ollama/ollama:0.40.10

@@ -1,6 +1,6 @@
-# Developing Dossier
+# Developing Jobs Ireland
 
-Next.js 16 (App Router) + Prisma 7 + PostgreSQL 18, run with Docker Compose and Yarn 4. Nothing runs on the host: every command goes through the containers. For installing and running Dossier, see the [README](README.md); for how it's secured, [SECURITY.md](SECURITY.md).
+Next.js 16 (App Router) + Prisma 7 + PostgreSQL 18, run with Docker Compose and Yarn 4. Nothing runs on the host: every command goes through the containers. For installing and running Jobs Ireland, see the [README](README.md); for how it's secured, [SECURITY.md](SECURITY.md).
 
 ## Getting started
 
@@ -48,7 +48,7 @@ The restart regenerates the Prisma Client and picks it up; since Prisma 7, `migr
 
 ### SQLite
 
-Dossier also runs on an SQLite file, when `DATABASE_URL` is one (`file:/data/dossier.db`), for a single container without a database server. `src/lib/database.ts` picks the client, and `prisma7.config.ts` the schema and migrations, from `DATABASE_URL`. The SQLite schema, `prisma/sqlite/schema.prisma`, is made from `prisma/schema.prisma`, which stays the only one to edit. After changing it, update the SQLite schema and make its migration too:
+Jobs Ireland also runs on an SQLite file, when `DATABASE_URL` is one (`file:/data/dossier.db`), for a single container without a database server. `src/lib/database.ts` picks the client, and `prisma7.config.ts` the schema and migrations, from `DATABASE_URL`. The SQLite schema, `prisma/sqlite/schema.prisma`, is made from `prisma/schema.prisma`, which stays the only one to edit. After changing it, update the SQLite schema and make its migration too:
 
 ```bash
 docker/bin/yarn sqlite-schema
@@ -142,7 +142,7 @@ Both get the session from `getSession()` in `src/lib/auth/session.ts` (see [Sign
 
 ## Sign-in
 
-Dossier has one user and no accounts: you sign in with the password that `DOSSIER_PASSWORD` is a hash of. The session is an encrypted token (JWE, keyed from `DOSSIER_SECRET`) in an HttpOnly, SameSite=Lax cookie, so nothing is stored on the server. It lasts until the browser closes, but at most 24 hours; with "Keep me signed in", 30 days.
+Jobs Ireland has one user and no accounts: you sign in with the password that `DOSSIER_PASSWORD` is a hash of. The session is an encrypted token (JWE, keyed from `DOSSIER_SECRET`) in an HttpOnly, SameSite=Lax cookie, so nothing is stored on the server. It lasts until the browser closes, but at most 24 hours; with "Keep me signed in", 30 days.
 
 The hash is argon2id with OWASP's settings (19 MiB, 2 passes, 1 lane) from Node's own `crypto.argon2`, made by `docker/bin/yarn hash-password` (`scripts/hash-password.ts`, which the image bundles as the `hash-password` command). Checking a password against it is in `src/lib/auth/password-hash.ts`, and `src/lib/env.ts` refuses anything that isn't a hash. It's written as `argon2id:m=19456,t=2,p=1:<salt>:<hash>` rather than the usual `$argon2id$v=19$…`, because Next.js and Docker Compose expand `$` in `.env` files, even inside quotes. The settings are part of each hash, so stronger ones can come later without breaking existing hashes.
 
@@ -154,7 +154,7 @@ Failed sign-ins are rate-limited in Postgres: after 5 failures within a minute f
 
 ## AI provider
 
-Dossier reads job postings and writes drafts with the model you choose in Settings → AI provider: a local model through Ollama or llama.cpp, LM Studio, any OpenAI-compatible server, Anthropic or Mistral. Until you save a choice there, the `DOSSIER_AI_*` variables decide (see `.env.example`). API keys are stored encrypted with a key derived from `DOSSIER_SECRET`, and never sent back to the browser.
+Jobs Ireland reads job postings and writes drafts with the model you choose in Settings → AI provider: a local model through Ollama or llama.cpp, LM Studio, any OpenAI-compatible server, Anthropic or Mistral. Until you save a choice there, the `DOSSIER_AI_*` variables decide (see `.env.example`). API keys are stored encrypted with a key derived from `DOSSIER_SECRET`, and never sent back to the browser.
 
 A server that speaks OpenAI's API with a difference (an address people tend to get wrong, a header it requires, a field every request needs) doesn't need a provider of its own: give it an entry in `src/lib/ai/providers/servers.ts` and a case in `servers.test.ts`. DeepSeek, OpenRouter and OpenCode are there already.
 
@@ -220,7 +220,7 @@ With "Nightly backups" on (the default), the app writes the same export to `back
 
 ### Import size limit
 
-Import files are capped at 10 MB, roughly 500 applications. The limit comes from Next.js, which buffers request bodies up to [`experimental.proxyClientMaxBodySize`](https://nextjs.org/docs/app/api-reference/config/next-config-js/proxyClientMaxBodySize) (10 MB by default) because `src/proxy.ts` runs on every request; larger bodies are cut off, so the app refuses them up front. To accept bigger files, raise that option in `next.config.ts` and `IMPORT_MAX_BYTES` in `src/lib/import-limits.ts`. Behind a reverse proxy, its own limit applies as well: with nginx, raise `client_max_body_size` (see [Troubleshooting](https://github.com/AienTech/dossier/wiki/Troubleshooting) in the wiki).
+Import files are capped at 10 MB, roughly 500 applications. The limit comes from Next.js, which buffers request bodies up to [`experimental.proxyClientMaxBodySize`](https://nextjs.org/docs/app/api-reference/config/next-config-js/proxyClientMaxBodySize) (10 MB by default) because `src/proxy.ts` runs on every request; larger bodies are cut off, so the app refuses them up front. To accept bigger files, raise that option in `next.config.ts` and `IMPORT_MAX_BYTES` in `src/lib/import-limits.ts`. Behind a reverse proxy, its own limit applies as well: with nginx, raise `client_max_body_size` (see [Troubleshooting](https://github.com/chrisnol6073/dossier/blob/main/docs/help/Troubleshooting) in the wiki).
 
 ## Job agent
 
@@ -232,14 +232,6 @@ The job agent (`src/lib/agent`, the `/agent` screen and Settings → Job agent) 
 - **Schedule** (`schedule.ts`): a timer in the process, like the nightly backups, that checks every 15 minutes and starts the day's run after `agentHour` in `lastKnownTimeZone()`. It only works with one instance. At startup, candidates left DRAFTING go back to SCORED.
 
 The end-to-end spec `e2e/agent.spec.ts` runs it against the fake JSearch and the fake AI, which scores by title (`posting_score` in `e2e/fake-ai.mts`).
-
-## Usage ping
-
-The usage ping is opt-in. A production server asks once after sign-in (`src/app/(app)/usage-ping-dialog.tsx`, shown by the signed-in layout while nobody has answered and `DOSSIER_TELEMETRY` isn't set) and sends nothing before a yes. After one, on each day someone signed in opens a page, it sends `https://telemetry.dossier.aien.me/ping` the install's random ID and the version, once (`src/lib/usage-ping.ts`, called with `after()` from the signed-in layout). `DOSSIER_TELEMETRY=on` or `off` answers in advance and wins while it's set.
-
-The answer, when it was given and the version of the question's text are the settings `usagePingChoice`, `usagePingChoiceAt` and `usagePingChoiceText`; the ID and the day of the last ping are `usagePingId` and `usagePingDay`. Exports leave them all out and imports keep them (`INSTALL_SETTINGS` in `src/lib/data-export.ts`). A no deletes the ID. When the question's text changes, raise `USAGE_PING_TEXT_VERSION`, and everyone is asked again. Development servers and tests never ask or send it (`NODE_ENV` isn't `production`). The end-to-end run is a production build: `resetData()` answers no, `e2e/usage-ping.spec.ts` asks, and a yes goes to the fake job sources (`DOSSIER_USAGE_PING_TEST_URL`), never the project.
-
-The receiving end is a small service on the project's own server that isn't published with the app. Change what the ping sends only together with it, the wiki's [Privacy](https://github.com/AienTech/dossier/wiki/Privacy) page and Settings → About.
 
 ## Tests and checks
 

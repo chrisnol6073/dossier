@@ -27,7 +27,7 @@ import { recordRunEnd, recordRunStart, runLimitProblem } from "./runs";
 // in Settings → Job agent, each through its own source), the postings seen
 // before or with an excluded title dropped, and a score for the newest of
 // the rest. It never sends anything.
-// Adapted from avinashbatchala's fork of Dossier.
+// Adapted from avinashbatchala's fork of Jobs Ireland.
 
 export const agentScanResultSchema = z.object({
   /** Postings the source returned. */

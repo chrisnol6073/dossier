@@ -1,4 +1,4 @@
-// Dossier's data model (PRD §9). After editing, run
+// Jobs Ireland's data model (PRD §9). After editing, run
 // `docker/bin/yarn prisma migrate dev --name <name>` and `docker compose restart app`.
 //
 // Conventions:
@@ -437,7 +437,7 @@ model Application {
   /// The Gmail thread the application was sent in, when it went out through Gmail (E15-2).
   emailThreadId       String?
   /// The Google Calendar event of the next interview, and the calendar it's
-  /// in, when Dossier added it: kept in step with nextInterviewAt both ways.
+  /// in, when Jobs Ireland added it: kept in step with nextInterviewAt both ways.
   interviewEventId    String?
   interviewCalendarId String?
   /// The Find jobs posting it was started from, if any (E14-8).
@@ -819,7 +819,7 @@ model GoogleAccount {
 }
 
 enum EmailDirection {
-  /// Sent from Dossier, or from Gmail in a thread Dossier knows.
+  /// Sent from Jobs Ireland, or from Gmail in a thread Jobs Ireland knows.
   OUTGOING
   INCOMING
 }
@@ -871,7 +871,7 @@ model EmailMessage {
   /// What the draft couldn't answer from the profile (stringList).
   replyGaps       Json?
   draftedWith     String?
-  /// Answered from Dossier, or marked as needing no answer.
+  /// Answered from Jobs Ireland, or marked as needing no answer.
   handledAt       DateTime?
   /// "Not job-related": only the ids and date are kept, so the inbox check
   /// doesn't fetch it again.

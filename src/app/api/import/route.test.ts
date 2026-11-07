@@ -11,7 +11,7 @@ vi.mock("@/lib/auth/session", () => ({ getSession: vi.fn() }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/prisma", () => ({ prisma: { job: { findMany: vi.fn(async () => []) } } }));
 vi.mock("@/lib/jobs/runner", () => ({ cancelJob: vi.fn() }));
-vi.mock("@/lib/backups", () => ({ writeBackup: vi.fn(async () => "dossier-backup-before-import-2026-09-28-120000.json") }));
+vi.mock("@/lib/backups", () => ({ writeBackup: vi.fn(async () => "jobs-ireland-backup-before-import-2026-09-28-120000.json") }));
 const summary = { applications: 2, roles: 3, skills: 7, themes: 0, notes: 1 };
 vi.mock("@/lib/data-import", () => ({
   parseExport: vi.fn(() => ({ ok: true, data: { exportedAt: new Date("2026-09-27T10:00:00Z") } })),
@@ -54,10 +54,10 @@ describe("POST /api/import (E10-6)", () => {
   });
 
   it("refuses a file that isn't an export", async () => {
-    vi.mocked(parseExport).mockReturnValueOnce({ ok: false, error: "That file isn't a Dossier export." });
+    vi.mocked(parseExport).mockReturnValueOnce({ ok: false, error: "That file isn't a Jobs Ireland export." });
     const response = await post();
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: "That file isn't a Dossier export." });
+    expect(await response.json()).toEqual({ error: "That file isn't a Jobs Ireland export." });
     expect(writeBackup).not.toHaveBeenCalled();
   });
 

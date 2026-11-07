@@ -1,6 +1,6 @@
 // Prints a hash of a password, for DOSSIER_PASSWORD. In the image:
 //
-//   docker run --rm -it ghcr.io/aientech/dossier hash-password
+//   docker run --rm -it dossier-europe:local hash-password
 //
 // and in development `docker/bin/yarn hash-password`. It asks for the
 // password twice without showing it. When stdin isn't a terminal, it reads
@@ -67,7 +67,7 @@ async function readPassword(): Promise<string> {
 async function main() {
   try {
     const hash = await hashPassword(await readPassword());
-    process.stderr.write("Set DOSSIER_PASSWORD to this, then restart Dossier:\n");
+    process.stderr.write("Set DOSSIER_PASSWORD to this, then restart Jobs Ireland:\n");
     process.stdout.write(`${hash}\n`);
   } catch (error) {
     if (!(error instanceof Cancelled)) process.stderr.write(`${(error as Error).message}\n`);

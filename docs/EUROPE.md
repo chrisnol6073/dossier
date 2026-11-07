@@ -1,4 +1,4 @@
-# Dossier for a European QA job search
+# Jobs Ireland for a European QA job search
 
 This fork adds two job sources and a multi-search job agent, aimed at QA roles in Ireland, the UK, Bulgaria and the rest of Europe.
 

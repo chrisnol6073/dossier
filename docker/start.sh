@@ -21,11 +21,11 @@ esac
 
 cd /app/tools
 if ! node node_modules/prisma/build/index.js migrate deploy; then
-  echo "Dossier didn't start: applying the database migrations failed (see the error above). See Troubleshooting in the wiki: https://github.com/AienTech/dossier/wiki/Troubleshooting" >&2
+  echo "Jobs Ireland didn't start: applying the database migrations failed (see the error above). See Troubleshooting: https://github.com/chrisnol6073/dossier/blob/main/docs/help/Troubleshooting.md" >&2
   exit 1
 fi
 if ! node seed.mjs; then
-  echo "Dossier didn't start: loading the built-in themes failed (see the error above)." >&2
+  echo "Jobs Ireland didn't start: loading the built-in themes failed (see the error above)." >&2
   exit 1
 fi
 

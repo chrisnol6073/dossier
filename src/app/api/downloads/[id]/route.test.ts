@@ -17,7 +17,7 @@ const dataDir = vi.hoisted(() => ({ path: "" }));
 vi.mock("@/lib/env", () => ({ env: { get DOSSIER_DATA_DIR() { return dataDir.path; } } }));
 
 const get = (id: string) => GET(new NextRequest(`http://localhost:3000/api/downloads/${id}`), { params: Promise.resolve({ id }) });
-const done = { id: "job-1", type: "zip-pdfs", status: "DONE", step: null, error: null, result: { file: "abc-123.zip", fileName: "dossier-pdfs-2026-09-28.zip", documents: 2 } } as const;
+const done = { id: "job-1", type: "zip-pdfs", status: "DONE", step: null, error: null, result: { file: "abc-123.zip", fileName: "jobs-ireland-pdfs-2026-09-28.zip", documents: 2 } } as const;
 
 beforeEach(async () => {
   dataDir.path = await mkdtemp(path.join(tmpdir(), "dossier-downloads-"));
@@ -32,7 +32,7 @@ describe("GET /api/downloads/[id] (E10-5)", () => {
     const response = await get("job-1");
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("application/zip");
-    expect(response.headers.get("content-disposition")).toContain('filename="dossier-pdfs-2026-09-28.zip"');
+    expect(response.headers.get("content-disposition")).toContain('filename="jobs-ireland-pdfs-2026-09-28.zip"');
     expect(await response.text()).toBe("PK zip");
     expect(await readdir(path.join(dataDir.path, "downloads"))).toEqual([]);
     expect((await get("job-1")).status).toBe(410);

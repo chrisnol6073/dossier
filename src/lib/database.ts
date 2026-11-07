@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaClient as SqliteClient } from "@/generated/prisma-sqlite/client";
 
-// Dossier keeps its data in PostgreSQL, or in an SQLite file when
+// Jobs Ireland keeps its data in PostgreSQL, or in an SQLite file when
 // DATABASE_URL is one ("file:/data/dossier.db"), for a single container
 // without a database server. The SQLite schema is made from the PostgreSQL
 // one (prisma/sqlite), so both clients have the same models, and the code

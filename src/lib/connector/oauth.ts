@@ -11,7 +11,7 @@ import { loadSettings } from "@/lib/settings-data";
 // Sign-in for the Claude connector (#221, src/app/api/mcp): a small OAuth 2.1
 // authorization server, as Claude's custom connectors expect it, with
 // Dynamic Client Registration and PKCE (S256 only). Adapted from Anirudh
-// Sharma's fork of Dossier. It keeps nothing in the database: clients, codes
+// Sharma's fork of Jobs Ireland. It keeps nothing in the database: clients, codes
 // and tokens are signed with keys derived from DOSSIER_SECRET, and every one
 // carries a fingerprint of DOSSIER_PASSWORD and the time the connector was
 // turned on (connectorEnabledAt). So a new password, a new secret, Disconnect
@@ -199,7 +199,7 @@ export async function refresh({ refreshToken, clientId }: { refreshToken: string
   return tokens(clientId, String(claims.res ?? ""), current!);
 }
 
-/** Whether a bearer token lets Claude use Dossier now; the client it was issued to, if so. */
+/** Whether a bearer token lets Claude use Jobs Ireland now; the client it was issued to, if so. */
 export async function verifyAccessToken(token: string | null | undefined): Promise<{ clientId: string } | null> {
   const [claims, current] = await Promise.all([verify("access", token), stamp()]);
   if (!claims || claims.scope !== SCOPE || !stillValid(claims, current)) return null;
@@ -233,6 +233,6 @@ export function protectedResourceMetadata(origin: string) {
     authorization_servers: [origin],
     scopes_supported: [SCOPE],
     bearer_methods_supported: ["header"],
-    resource_name: "Dossier",
+    resource_name: "Jobs Ireland",
   };
 }

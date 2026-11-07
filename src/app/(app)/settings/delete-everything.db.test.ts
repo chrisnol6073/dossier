@@ -43,7 +43,7 @@ const snapshot = async () => JSON.stringify({ ...(await buildExport(prisma(), { 
 beforeEach(async () => {
   dataDir.path = await mkdtemp(path.join(tmpdir(), "dossier-delete-"));
   await mkdir(path.join(dataDir.path, "backups"));
-  await writeFile(path.join(dataDir.path, "backups", "dossier-backup-nightly-2026-09-27-030000.json"), "{}");
+  await writeFile(path.join(dataDir.path, "backups", "jobs-ireland-backup-nightly-2026-09-27-030000.json"), "{}");
   redirected.to = "";
   await resetDatabase(prisma());
   await seedBuiltIns(prisma());

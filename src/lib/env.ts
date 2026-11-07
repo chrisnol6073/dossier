@@ -8,7 +8,7 @@ import { isPasswordHash } from "@/lib/auth/password-hash";
 
 const SECRET_MIN_LENGTH = 32;
 const GENERATE_SECRET = "for example the output of `openssl rand -base64 32`";
-const HASH_PASSWORD = "Make one with `docker run --rm -it ghcr.io/aientech/dossier hash-password`";
+const HASH_PASSWORD = "Make one with `docker run --rm -it dossier-europe:local hash-password`";
 
 export const AI_PROVIDERS = ["local", "openai", "anthropic", "mistral", "lmstudio"] as const;
 export const JOB_SOURCE_NAMES = ["jsearch", "adzuna", "arbeitsagentur", "freehire", "jooble", "company-boards", "off"] as const;
@@ -79,7 +79,7 @@ const schema = z.object({
         error: "DOSSIER_BACKUP_RETENTION_DAYS must be at least 1.",
       }),
     ),
-  // The daily usage ping (usage-ping.ts): unset, Dossier asks after
+  // The daily usage ping (usage-ping.ts): unset, Jobs Ireland asks after
   // sign-in and sends nothing before a yes; on or off answers for good.
   DOSSIER_TELEMETRY: optional(
     z
@@ -165,7 +165,7 @@ const schema = z.object({
   // Never echo the secret.
   DOSSIER_GOOGLE_CLIENT_ID: optional(z.string().trim()),
   DOSSIER_GOOGLE_CLIENT_SECRET: optional(z.string().trim()),
-  // The address Dossier is reached at, e.g. https://dossier.example.com, for
+  // The address Jobs Ireland is reached at, e.g. https://dossier.example.com, for
   // Google's redirect. Defaults to the address of the request that connects.
   DOSSIER_PUBLIC_URL: optional(
     z.url({ protocol: /^https?$/, error: "DOSSIER_PUBLIC_URL must be an http:// or https:// URL." }).transform((url) => url.replace(/\/+$/, "")),
@@ -248,7 +248,7 @@ export function checkEnvOnStartup(): void {
   } catch (error) {
     if (!(error instanceof EnvError)) throw error;
     for (const problem of error.problems) {
-      console.error(`Dossier can't start: ${problem}`);
+      console.error(`Jobs Ireland can't start: ${problem}`);
     }
     process.exit(1);
   }

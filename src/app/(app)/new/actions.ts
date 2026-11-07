@@ -21,7 +21,7 @@ export const startReadingPosting = action(
 
 /**
  * "Write it with Claude →" (#221, the connector on and no AI model of
- * Dossier's own): keeps the posting for the connector to read and gives the
+ * Jobs Ireland's own): keeps the posting for the connector to read and gives the
  * claude.ai chat to open, where Claude writes the application on the user's
  * own Claude plan.
  */

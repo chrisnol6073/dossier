@@ -81,7 +81,7 @@ export const restorePosting = action(postingRef.extend({ saved: z.boolean() }), 
 /**
  * "Score" (#208): how well a posting fits the profile, in the background; a
  * scoring under way is followed, not started again. With the Claude connector
- * on and no AI model of Dossier's own, a Claude chat scores it instead (#221),
+ * on and no AI model of Jobs Ireland's own, a Claude chat scores it instead (#221),
  * unless Settings → Scoring chose Jev (#274).
  */
 export const startScoringPosting = action(z.object({ posting: foundPostingSchema }), async ({ posting }): Promise<{ jobId: string } | { handoff: string }> => {

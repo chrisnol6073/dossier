@@ -229,8 +229,8 @@ export function JobSearchSection({ initial }: { initial: JobSearchSettingsView }
             {source === "FREEHIRE" && (
               <p className="text-sm text-muted">
                 {view.freehire.host === new URL(FREEHIRE_URL).host
-                  ? `No key needed. Dossier searches FreeHire's public catalogue at ${view.freehire.host}.`
-                  : `No key needed. Dossier searches your own FreeHire at ${view.freehire.host}.`}
+                  ? `No key needed. Jobs Ireland searches FreeHire's public catalogue at ${view.freehire.host}.`
+                  : `No key needed. Jobs Ireland searches your own FreeHire at ${view.freehire.host}.`}
               </p>
             )}
 

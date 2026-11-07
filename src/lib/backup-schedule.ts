@@ -52,7 +52,7 @@ export async function runNightlyBackup(now = new Date()): Promise<"written" | "o
 
 /** When the newest nightly backup was written, if any. */
 export async function lastNightlyBackup(): Promise<Date | null> {
-  const [latest] = (await listBackups()).filter((backup) => backup.name.startsWith("dossier-backup-nightly-"));
+  const [latest] = (await listBackups()).filter((backup) => /^(jobs-ireland|dossier)-backup-nightly-/.test(backup.name));
   if (!latest) return null;
   return (await stat(path.join(backupsDir(), latest.name)).catch(() => null))?.mtime ?? null;
 }
