@@ -19,11 +19,14 @@ import { loadPostingScorer, scoringProblem } from "@/lib/scoring";
 import { loadSettings } from "@/lib/settings-data";
 
 import { agentDedupeKey, candidateData } from "./candidates";
+import { agentSearchPlan, excludedTerms, mergePostings } from "./searches";
 import { agentDraftJob, draftJobKey } from "./draft";
 import { recordRunEnd, recordRunStart, runLimitProblem } from "./runs";
 
-// One run of the job agent (E16-3): one search, the postings seen before
-// dropped, and a score for the newest of the rest. It never sends anything.
+// One run of the job agent (E16-3): its searches (the main one and any more
+// in Settings → Job agent, each through its own source), the postings seen
+// before or with an excluded title dropped, and a score for the newest of
+// the rest. It never sends anything.
 // Adapted from avinashbatchala's fork of Dossier.
 
 export const agentScanResultSchema = z.object({
@@ -89,8 +92,8 @@ export async function newPostings(postings: readonly FoundPosting[]): Promise<Fo
 const newestFirst = (a: FoundPosting, b: FoundPosting) => (b.postedAt ? Date.parse(b.postedAt) : 0) - (a.postedAt ? Date.parse(a.postedAt) : 0);
 
 /**
- * One run: the first page of results only (one source request), then a
- * score for the newest new postings, up to agentMaxScores. Each is kept as a
+ * One run: the first page of results of each search (one source request
+ * each), then a score for the newest new postings, up to agentMaxScores. Each is kept as a
  * candidate, so it doesn't come back; one below agentMinScore stays out of
  * the queue. With auto-draft on, the best of them get a draft each, up to
  * agentMaxDrafts, each its own job. A scheduled run does nothing while the
@@ -112,19 +115,30 @@ export async function runAgentScan({ manual }: { manual: boolean }, context: Job
 
   await context.step("Searching for new postings");
   const config = await loadJobSearchConfig();
-  const source = config.source!;
-  let postings: FoundPosting[];
-  try {
-    // The first page only: the agent never asks for a second.
-    postings = (await searchPostings(source, credentialsFor(config, source), settings.agentQuery, null, requestContext(source))).postings;
-  } catch (error) {
-    if (error instanceof JobSearchError) return finish(stopped(error.message));
-    throw error;
+  const plan = agentSearchPlan(settings.agentQuery, config.source, settings.agentSearches);
+  const pages: FoundPosting[][] = [];
+  const problems: string[] = [];
+  for (const { source, query } of plan) {
+    if (context.signal.aborted) break;
+    try {
+      // The first page only: the agent never asks for a second.
+      pages.push((await searchPostings(source, credentialsFor(config, source), query, null, requestContext(source))).postings);
+    } catch (error) {
+      // One search that fails doesn't stop the others.
+      if (error instanceof JobSearchError) problems.push(error.message);
+      else throw error;
+    }
   }
+  if (pages.length === 0) return finish(stopped(problems[0] ?? "No search could run."));
+  const found = pages.flat().length;
+  const postings = mergePostings(pages, excludedTerms(settings.agentExcludeTitles));
+  const searchedNote = plan.length > 1 ? ` (${pages.length} of ${plan.length} searches ran${problems.length ? `; ${problems[0]}` : ""})` : "";
 
   const fresh = await newPostings(postings);
-  const counts = { found: postings.length, fresh: fresh.length, skipped: postings.length - fresh.length, drafted: 0 };
-  if (fresh.length === 0) return finish({ ...counts, scored: 0, message: postings.length === 0 ? "The search found no postings this time." : "No new postings this time." });
+  const counts = { found, fresh: fresh.length, skipped: found - fresh.length, drafted: 0 };
+  if (fresh.length === 0) {
+    return finish({ ...counts, scored: 0, message: `${found === 0 ? "The search found no postings this time." : "No new postings this time."}${searchedNote}` });
+  }
 
   const toScore = fresh.toSorted(newestFirst).slice(0, settings.agentMaxScores);
   await context.step(`Scoring ${toScore.length} ${toScore.length === 1 ? "posting" : "postings"}`);
@@ -174,5 +188,5 @@ export async function runAgentScan({ manual }: { manual: boolean }, context: Job
         : drafted > 0
           ? `${waiting} Preparing ${drafted === 1 ? "a draft for the best one" : `drafts for the best ${drafted}`}.`
           : waiting;
-  return finish({ ...counts, scored, drafted, message });
+  return finish({ ...counts, scored, drafted, message: `${message}${searchedNote}` });
 }

@@ -7,6 +7,7 @@ import { AgentCandidateStatus } from "@/generated/prisma/enums";
 import { agentDraftJob, approveCandidate, dismissCandidate, draftJobKey, restoreCandidate } from "@/lib/agent/draft";
 import { AGENT_JOB_KEY, agentScanJob } from "@/lib/agent/jobs";
 import { agentQueryReady, agentSetupProblem } from "@/lib/agent/run";
+import { AGENT_MAX_SEARCHES, agentSearchSchema } from "@/lib/agent/searches";
 import { runLimitProblem } from "@/lib/agent/runs";
 import { action, ActionError } from "@/lib/action";
 import { safeLink, searchQuerySchema } from "@/lib/job-search/search";
@@ -30,6 +31,8 @@ export const saveAgentSettings = action(
     maxScores: z.number().int().min(1).max(30).optional(),
     maxDrafts: z.number().int().min(0).max(10).optional(),
     autoDraft: z.boolean().optional(),
+    searches: z.array(agentSearchSchema).max(AGENT_MAX_SEARCHES).optional(),
+    excludeTitles: z.string().trim().max(500).optional(),
   }),
   async (changes) => {
     const settings = await loadSettings();
@@ -45,6 +48,8 @@ export const saveAgentSettings = action(
       agentMaxScores: changes.maxScores,
       agentMaxDrafts: changes.maxDrafts,
       agentAutoDraft: changes.autoDraft,
+      agentSearches: changes.searches,
+      agentExcludeTitles: changes.excludeTitles,
     });
     revalidatePath("/agent");
     return null;

@@ -1,0 +1,16 @@
+# Chris's European fork: builds this repository's code into a local image
+# instead of pulling ghcr.io/aientech/dossier, and passes the Jooble and
+# company boards settings through. Used together with compose.production.yml;
+# .env sets COMPOSE_FILE so a plain `docker compose up -d --build` uses both.
+
+services:
+  app:
+    build:
+      context: .
+    image: dossier-europe:local
+    pull_policy: build
+    environment:
+      # Jooble keys, one per country: ie=KEY,bg=KEY (or enter them in Settings → Job search).
+      DOSSIER_JOOBLE_KEY: ${DOSSIER_JOOBLE_KEY:-}
+      # Your own company boards list, "greenhouse:intercom Intercom" comma-separated; unset uses the built-in European list.
+      DOSSIER_COMPANY_BOARDS: ${DOSSIER_COMPANY_BOARDS:-}

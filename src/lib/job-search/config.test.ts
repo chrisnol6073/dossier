@@ -13,6 +13,8 @@ const nothingSaved = {
   adzunaAppId: null,
   adzunaKeyEnc: null,
   arbeitsagenturAcceptedAt: null,
+  joobleKeyEnc: null,
+  companyBoards: null,
 };
 const ACCEPTED = "2026-10-23T09:00:00.000Z";
 const noEnv = {};
@@ -27,6 +29,8 @@ describe("resolveJobSearchConfig", () => {
       adzuna: { appId: "", keyState: "none" },
       arbeitsagentur: { offered: true, acceptedAt: null },
       freehire: { host: "freehire.me" },
+      jooble: { keyState: "none", countries: [] },
+      companyBoards: { text: expect.any(String), count: expect.any(Number), builtIn: true },
     });
   });
 
@@ -55,6 +59,8 @@ describe("resolveJobSearchConfig", () => {
       adzunaAppId: "app-saved",
       adzunaKeyEnc: encryptSecret(JOB_SOURCE_KEY, "adz-saved"),
       arbeitsagenturAcceptedAt: null,
+      joobleKeyEnc: null,
+      companyBoards: null,
     };
     const config = resolveJobSearchConfig(saved, { DOSSIER_JOBS_SOURCE: "jsearch", DOSSIER_JSEARCH_KEY: "ak_env", DOSSIER_JSEARCH_HOST: "rapidapi" });
     expect(config).toMatchObject({

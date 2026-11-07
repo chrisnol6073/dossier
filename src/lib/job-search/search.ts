@@ -12,8 +12,15 @@ import { SOURCE_INFO } from "./sources";
 // In this code "job" already means a background task (src/lib/jobs), so a
 // job ad is a "posting".
 
-/** The job sources Dossier can search (E14-1 to E14-3, FreeHire), in the order Settings lists them; one is chosen there. */
-export const JOB_SOURCES = [PostingSource.JSEARCH, PostingSource.ADZUNA, PostingSource.FREEHIRE, PostingSource.ARBEITSAGENTUR] as const;
+/** The job sources Dossier can search (E14-1 to E14-3, FreeHire, Jooble, company boards), in the order Settings lists them; one is chosen there. */
+export const JOB_SOURCES = [
+  PostingSource.COMPANY_BOARDS,
+  PostingSource.JOOBLE,
+  PostingSource.JSEARCH,
+  PostingSource.ADZUNA,
+  PostingSource.FREEHIRE,
+  PostingSource.ARBEITSAGENTUR,
+] as const;
 export type JobSource = PostingSource;
 
 /** Where a JSearch key comes from: OpenWeb Ninja directly, or the RapidAPI marketplace. */

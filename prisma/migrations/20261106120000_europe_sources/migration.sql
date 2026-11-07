@@ -1,0 +1,3 @@
+-- AlterEnum
+ALTER TYPE "PostingSource" ADD VALUE 'JOOBLE';
+ALTER TYPE "PostingSource" ADD VALUE 'COMPANY_BOARDS';

@@ -18,6 +18,8 @@ const initial: AgentSettings = {
   maxScores: 15,
   maxDrafts: 3,
   autoDraft: false,
+  searches: [],
+  excludeTitles: "",
 };
 const countries = [
   { code: "de", name: "Germany" },
@@ -78,7 +80,15 @@ describe("Settings → Job agent (E16-7)", () => {
 
   it("explains the limits in plain words", () => {
     open();
-    expect(screen.getByText(/^One search a day, and at most three in any 24 hours\. Each run scores up to 15 postings\./)).toBeInTheDocument();
+    expect(screen.getByText(/^One run a day, and at most three in any 24 hours; each run makes 1 search\. Each run scores up to 15 postings\./)).toBeInTheDocument();
+  });
+
+  it("adds the European QA set of searches and saves them", async () => {
+    open();
+    await userEvent.click(screen.getByRole("button", { name: "Add the European QA set" }));
+    expect(screen.getAllByRole("button", { name: "Remove" })).toHaveLength(8);
+    expect(screen.getByLabelText("Leave out titles with")).toHaveValue("Java, C#, .NET");
+    await waitFor(() => expect(saveAgentSettings).toHaveBeenCalledWith(expect.objectContaining({ searches: expect.arrayContaining([expect.objectContaining({ source: "COMPANY_BOARDS", country: "bg" })]) })));
   });
 
   it("points to the source or AI provider while one isn't set up", () => {

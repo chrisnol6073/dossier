@@ -12,6 +12,10 @@ export type JobSearchSettingsView = {
   arbeitsagentur: { offered: boolean; acceptedAt: string | null };
   /** The FreeHire it searches: "freehire.me", or a self-hosted one's host (DOSSIER_FREEHIRE_URL). */
   freehire: { host: string };
+  /** The countries with a Jooble key ("*" for a key without one), never the keys. */
+  jooble: { keyState: JobKeyState; countries: string[] };
+  /** The company boards it reads, one "ats:slug" a line, as saved; empty uses the built-in list. */
+  companyBoards: { text: string; count: number; builtIn: boolean };
 };
 
 /** Where to get a JSearch key, by where it's from. */
@@ -78,6 +82,29 @@ export const SOURCE_INFO: Record<JobSource, SourceInfo> = {
     attribution: "Source: Bundesagentur für Arbeit",
     attributionLink: null,
     countries: ["de"],
+    radius: true,
+  },
+  COMPANY_BOARDS: {
+    name: "Company job boards",
+    description:
+      "Postings straight from the Greenhouse, Lever and Ashby boards of a list of companies hiring in Ireland, the UK and Europe, with full postings. No reposts.",
+    tag: "Europe-focused list you can edit · free, no key · no distance filter",
+    keyUrl: null,
+    quotaPeriod: null,
+    attribution: null,
+    attributionLink: null,
+    countries: null,
+    radius: false,
+  },
+  JOOBLE: {
+    name: "Jooble",
+    description: "Jooble's index of job sites in 60+ countries, including Ireland, Bulgaria and Sweden. It only shares the start of each posting.",
+    tag: "Most of Europe · free key per country, 500 searches per key in total",
+    keyUrl: "https://jooble.org/api/about",
+    quotaPeriod: "this key",
+    attribution: "Jobs by Jooble",
+    attributionLink: null,
+    countries: null,
     radius: true,
   },
   FREEHIRE: {

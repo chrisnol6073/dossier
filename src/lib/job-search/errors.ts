@@ -42,10 +42,15 @@ export function jobSearchError(problem: JobSearchProblem, source: JobSource, { c
   const message = {
     off: `${name} isn't offered on this server. Choose another source in Settings → Job search.`,
     "not-accepted": `Read the note about ${name} and tick “I understand” before Dossier searches it.`,
-    "no-key": `Add your ${name} ${source === "ADZUNA" ? "app ID and key" : "key"} in Settings → Job search first.`,
+    "no-key":
+      source === "JOOBLE"
+        ? `Add a Jooble key for ${country ? countryName(country) : "this country"} in Settings → Job search first (each Jooble key covers one country).`
+        : `Add your ${name} ${source === "ADZUNA" ? "app ID and key" : "key"} in Settings → Job search first.`,
     key: `${name} didn't accept your key. Check it in Settings → Job search.`,
     quota: quotaPeriod
-      ? `You've used up your ${name} searches for ${quotaPeriod}. Try again then, or move to a bigger plan.`
+      ? source === "JOOBLE"
+        ? `This Jooble key's 500 searches are used up. Ask Jooble for a new key and enter it in Settings → Job search.`
+        : `You've used up your ${name} searches for ${quotaPeriod}. Try again then, or move to a bigger plan.`
       : `${name} is limiting searches right now. Wait a minute and try again.`,
     country: `${name} doesn't list jobs in ${countryName(country)}. Choose another country, or another source in Settings → Job search.`,
     unavailable: `${name} isn't answering right now. Try again in a minute.`,

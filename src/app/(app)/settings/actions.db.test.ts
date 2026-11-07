@@ -165,11 +165,22 @@ describe("job search settings (E14-4)", () => {
         adzuna: { appId: "", keyState: "none" },
         arbeitsagentur: { offered: true, acceptedAt: null },
         freehire: { host: "freehire.me" },
+        jooble: { keyState: "none", countries: [] },
+        companyBoards: { text: expect.any(String), count: expect.any(Number), builtIn: true },
       },
     });
     await saveJobSource({ source: "OFF" });
     expect((await settings()).jobSource).toBe("OFF");
     expect(await saveJobSource({ source: "LINKEDIN" as never })).toMatchObject({ ok: false });
+  });
+
+  it("saves Jooble keys encrypted and a company boards list, refusing one with no board", async () => {
+    const saved = await saveJobSourceKey({ source: "JOOBLE", change: { action: "set", value: "ie=K1, bg=K2" } });
+    expect(saved).toMatchObject({ ok: true, data: { jooble: { keyState: "set", countries: ["ie", "bg"] } } });
+    expect((await settings()).joobleKeyEnc).not.toContain("K1");
+    expect(await saveJobSearchDetails({ companyBoards: "lever:bolt Bolt" })).toMatchObject({ ok: true, data: { companyBoards: { count: 1, builtIn: false } } });
+    expect(await saveJobSearchDetails({ companyBoards: "not a board" })).toMatchObject({ ok: false });
+    expect(await saveJobSearchDetails({ companyBoards: "" })).toMatchObject({ ok: true, data: { companyBoards: { builtIn: true } } });
   });
 
   it("saves the Bundesagentur für Arbeit only with its note accepted (#223)", async () => {

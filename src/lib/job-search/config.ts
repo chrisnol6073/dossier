@@ -6,6 +6,8 @@ import type { SettingsData } from "@/lib/settings";
 import { loadSettings } from "@/lib/settings-data";
 
 import type { RequestContext, SourceCredentials } from "./adapter";
+import { DEFAULT_COMPANY_BOARDS, DEFAULT_COMPANY_BOARDS_TEXT, parseCompanyBoards, type CompanyBoard } from "./company-boards-list";
+import { countryCodeFor } from "./countries";
 import { JobSearchError, jobSearchError } from "./errors";
 import type { JobSource, JSearchHost } from "./search";
 import { ARBEITSAGENTUR_NOTE, FREEHIRE_URL, SOURCE_INFO, type JobKeyState, type JobSearchSettingsView } from "./sources";
@@ -28,9 +30,16 @@ export type JobSearchConfig = {
   arbeitsagentur: { offered: boolean; acceptedAt: string | null };
   /** The FreeHire to search: freehire.me, or a self-hosted one (DOSSIER_FREEHIRE_URL). */
   freehire: { url: string };
+  /** Jooble keys by country code, "*" for one for any country. */
+  jooble: { keys: Record<string, string>; keyState: JobKeyState };
+  /** The company boards to read, and the text they came from. */
+  companyBoards: { boards: CompanyBoard[]; text: string; builtIn: boolean };
 };
 
-type SavedJobSettings = Pick<SettingsData, "jobSource" | "jsearchKeyEnc" | "jsearchHost" | "adzunaAppId" | "adzunaKeyEnc" | "arbeitsagenturAcceptedAt">;
+type SavedJobSettings = Pick<
+  SettingsData,
+  "jobSource" | "jsearchKeyEnc" | "jsearchHost" | "adzunaAppId" | "adzunaKeyEnc" | "arbeitsagenturAcceptedAt" | "joobleKeyEnc" | "companyBoards"
+>;
 type JobEnv = Pick<
   Env,
   | "DOSSIER_JOBS_SOURCE"
@@ -40,6 +49,8 @@ type JobEnv = Pick<
   | "DOSSIER_ADZUNA_KEY"
   | "DOSSIER_FREEHIRE_URL"
   | "DOSSIER_JOBS_ARBEITSAGENTUR"
+  | "DOSSIER_JOOBLE_KEY"
+  | "DOSSIER_COMPANY_BOARDS"
 >;
 
 const FROM_ENV: Record<NonNullable<Env["DOSSIER_JOBS_SOURCE"]>, JobSource | null> = {
@@ -47,6 +58,8 @@ const FROM_ENV: Record<NonNullable<Env["DOSSIER_JOBS_SOURCE"]>, JobSource | null
   adzuna: "ADZUNA",
   arbeitsagentur: "ARBEITSAGENTUR",
   freehire: "FREEHIRE",
+  jooble: "JOOBLE",
+  "company-boards": "COMPANY_BOARDS",
   off: null,
 };
 
@@ -61,6 +74,27 @@ function keyOf(stored: string | null, fromEnv: string | undefined, secret?: stri
     }
   }
   return fromEnv ? { key: fromEnv, keyState: "env" } : { key: null, keyState: "none" };
+}
+
+/**
+ * Jooble keys as written: "ie=KEY, bg=KEY" (a country by code or name before
+ * each), or one key on its own for any country.
+ */
+export function parseJoobleKeys(text: string): Record<string, string> {
+  const keys: Record<string, string> = {};
+  for (const part of text.split(/[,;\n]+/)) {
+    const entry = part.trim();
+    if (!entry) continue;
+    const at = entry.search(/[=:]/);
+    if (at < 0) {
+      keys["*"] = entry;
+      continue;
+    }
+    const country = countryCodeFor(entry.slice(0, at));
+    const key = entry.slice(at + 1).trim();
+    if (key) keys[country || "*"] = key;
+  }
+  return keys;
 }
 
 export function resolveJobSearchConfig(saved: SavedJobSettings, source: JobEnv, secret?: string): JobSearchConfig {
@@ -82,6 +116,15 @@ export function resolveJobSearchConfig(saved: SavedJobSettings, source: JobEnv, 
     },
     arbeitsagentur: { offered, acceptedAt: saved.arbeitsagenturAcceptedAt },
     freehire: { url: source.DOSSIER_FREEHIRE_URL ?? FREEHIRE_URL },
+    jooble: (() => {
+      const { key, keyState } = keyOf(saved.joobleKeyEnc, source.DOSSIER_JOOBLE_KEY, secret);
+      return { keys: key ? parseJoobleKeys(key) : {}, keyState };
+    })(),
+    companyBoards: (() => {
+      const text = saved.companyBoards?.trim() || source.DOSSIER_COMPANY_BOARDS?.trim() || "";
+      const boards = text ? parseCompanyBoards(text) : [];
+      return boards.length > 0 ? { boards, text, builtIn: false } : { boards: DEFAULT_COMPANY_BOARDS, text: DEFAULT_COMPANY_BOARDS_TEXT, builtIn: true };
+    })(),
   };
 }
 
@@ -108,6 +151,8 @@ export function jobSearchView(config: JobSearchConfig): JobSearchSettingsView {
     adzuna: { appId: config.adzuna.appId, keyState: config.adzuna.keyState },
     arbeitsagentur: config.arbeitsagentur,
     freehire: { host: new URL(config.freehire.url).host },
+    jooble: { keyState: config.jooble.keyState, countries: Object.keys(config.jooble.keys) },
+    companyBoards: { text: config.companyBoards.text, count: config.companyBoards.boards.length, builtIn: config.companyBoards.builtIn },
   };
 }
 
@@ -154,5 +199,12 @@ export function credentialsFor<S extends JobSource>(config: JobSearchConfig, sou
     }
     case "FREEHIRE":
       return {} as SourceCredentials[S];
+    case "JOOBLE": {
+      const { keys, keyState } = config.jooble;
+      if (Object.keys(keys).length === 0) throw missing(keyState);
+      return { keys } as SourceCredentials[S];
+    }
+    case "COMPANY_BOARDS":
+      return { boards: config.companyBoards.boards } as unknown as SourceCredentials[S];
   }
 }

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { AiProvider, Creativity, DateFormat, PaperSize, Tone } from "@/generated/prisma/enums";
+import { AGENT_MAX_SEARCHES, agentSearchSchema } from "@/lib/agent/searches";
 import { EMPTY_QUERY, JOB_SOURCES, JSEARCH_HOSTS, searchQuerySchema } from "@/lib/job-search/search";
 import { SCORERS } from "@/lib/scoring/scorers";
 import { startupsRefreshSchema } from "@/lib/startups/types";
@@ -154,6 +155,10 @@ export const settingsSchema = z.object({
   jsearchHost: z.enum(JSEARCH_HOSTS).catch("openwebninja"),
   adzunaAppId: z.string().nullable().catch(null),
   adzunaKeyEnc: z.string().nullable().catch(null),
+  /** Jooble keys, encrypted: "ie=KEY,bg=KEY", or one key for any country. */
+  joobleKeyEnc: z.string().nullable().catch(null),
+  /** The company boards to read, one "ats:slug Name" a line; null uses DOSSIER_COMPANY_BOARDS or the built-in list. */
+  companyBoards: z.string().max(20_000).nullable().catch(null),
   /** When "I understand" was ticked under the Bundesagentur für Arbeit's note (#223); its searches wait for it. */
   arbeitsagenturAcceptedAt: z.iso.datetime().nullable().catch(null),
   // Scoring (#274): what Score in Find jobs and the job agent score postings
@@ -166,6 +171,10 @@ export const settingsSchema = z.object({
   agentEnabled: flag(false),
   /** The search it runs, as Find jobs asks it; it needs keywords and a country to run. */
   agentQuery: json(searchQuerySchema).catch(EMPTY_QUERY),
+  /** More searches each run makes, each through its own source or the one in Settings → Job search. */
+  agentSearches: json(z.array(agentSearchSchema).max(AGENT_MAX_SEARCHES)).catch([]),
+  /** Postings whose title has one of these words or phrases (comma-separated) are left out before scoring. */
+  agentExcludeTitles: z.string().max(500).catch(""),
   /** The hour of the day it runs, in the user's time zone. */
   agentHour: z.coerce.number().int().min(0).max(23).catch(7),
   /** Postings scored below this stay out of the queue. */

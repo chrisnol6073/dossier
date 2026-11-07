@@ -11,7 +11,7 @@ const GENERATE_SECRET = "for example the output of `openssl rand -base64 32`";
 const HASH_PASSWORD = "Make one with `docker run --rm -it ghcr.io/aientech/dossier hash-password`";
 
 export const AI_PROVIDERS = ["local", "openai", "anthropic", "mistral", "lmstudio"] as const;
-export const JOB_SOURCE_NAMES = ["jsearch", "adzuna", "arbeitsagentur", "freehire", "off"] as const;
+export const JOB_SOURCE_NAMES = ["jsearch", "adzuna", "arbeitsagentur", "freehire", "jooble", "company-boards", "off"] as const;
 export const SCORER_NAMES = ["ai", "jev"] as const;
 
 // An empty value (`DOSSIER_AI_KEY=` in .env) counts as unset.
@@ -134,6 +134,12 @@ const schema = z.object({
   DOSSIER_FREEHIRE_URL: optional(
     z.url({ protocol: /^https?$/, error: "DOSSIER_FREEHIRE_URL must be an http:// or https:// URL." }).transform((url) => url.replace(/\/+$/, "")),
   ),
+  // Jooble keys, one per country site: "ie=KEY,bg=KEY", or a single key for any country.
+  // Never echo the value: they're API keys.
+  DOSSIER_JOOBLE_KEY: optional(z.string()),
+  // Company job boards to read, "greenhouse:intercom Intercom" one a line or
+  // comma-separated; unset uses the built-in European list.
+  DOSSIER_COMPANY_BOARDS: optional(z.string()),
   // Off takes the Bundesagentur für Arbeit out everywhere (#223): it isn't an
   // official API, so a server can choose not to offer it. Unset means on.
   DOSSIER_JOBS_ARBEITSAGENTUR: optional(

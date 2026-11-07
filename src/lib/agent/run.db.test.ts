@@ -42,13 +42,20 @@ const fake = vi.hoisted(() => ({
   ai: true,
   failOn: null as string | null,
   onScore: (() => {}) as (title: string) => void,
+  asked: [] as string[],
+  boardPostings: [] as FoundPosting[],
 }));
-vi.mock("@/lib/job-search", () => ({
-  searchPostings: vi.fn(async () => {
-    fake.searches += 1;
-    return { postings: fake.postings, next: "page-2" };
-  }),
-}));
+vi.mock("@/lib/job-search", async () => {
+  const { JobSearchError } = await import("@/lib/job-search/errors");
+  return {
+    searchPostings: vi.fn(async (source: string, _credentials: unknown, searched: SearchQuery) => {
+      fake.searches += 1;
+      fake.asked.push(`${source}:${searched.country}`);
+      if (source === "JOOBLE") throw new JobSearchError("no-key", "Add a Jooble key for Bulgaria in Settings → Job search first.");
+      return { postings: source === "COMPANY_BOARDS" ? fake.boardPostings : fake.postings, next: "page-2" };
+    }),
+  };
+});
 vi.mock("@/lib/job-search/config", () => ({
   loadJobSearchConfig: async () => ({
     source: fake.source,
@@ -107,7 +114,7 @@ const context = (abort?: AbortController): JobContext & { steps: string[] } => {
 
 beforeEach(async () => {
   await resetDatabase(prisma());
-  Object.assign(fake, { postings: page, searches: 0, source: "JSEARCH", ai: true, failOn: null, onScore: () => {} });
+  Object.assign(fake, { postings: page, searches: 0, source: "JSEARCH", ai: true, failOn: null, onScore: () => {}, asked: [], boardPostings: [] });
   await saveSettings({ agentEnabled: true, agentQuery: query });
 });
 afterAll(() => prisma().$disconnect());
@@ -130,6 +137,28 @@ describe("runAgentScan (E16-3)", () => {
     expect((await prisma().postingScore.findMany({ orderBy: { score: "desc" } })).map((row) => [row.externalId, row.score])).toEqual([["a", 90], ["b", 75], ["c", 40]]);
     // The run is on record, with how it ended.
     expect((await loadSettings()).agentRuns).toEqual([{ at: now.toISOString(), manual: false, message: "2 new postings are waiting for a look." }]);
+  });
+
+  it("makes its other searches too, each through its source, leaving out excluded titles and a search that fails", async () => {
+    fake.boardPostings = [
+      posting("a", "Senior Product Designer", "2026-10-19T00:00:00Z"),
+      { ...posting("q1", "Senior QA Engineer", "2026-10-19T12:00:00Z"), source: "COMPANY_BOARDS" },
+      { ...posting("q2", "Java SDET", "2026-10-19T12:00:00Z"), source: "COMPANY_BOARDS" },
+    ];
+    await saveSettings({
+      agentSearches: [
+        { ...query, country: "ie", source: "COMPANY_BOARDS" },
+        { ...query, country: "bg", source: "JOOBLE" },
+        { ...query, country: "de", source: "ARBEITSAGENTUR" },
+      ],
+      agentExcludeTitles: "Java",
+    });
+    const result = await runAgentScan({ manual: false }, context(), now);
+    expect(fake.asked).toEqual(["JSEARCH:nl", "COMPANY_BOARDS:ie", "JOOBLE:bg"]);
+    expect(result).toMatchObject({ found: 6, fresh: 4, scored: 4 });
+    expect(result.message).toMatch(/\(2 of 3 searches ran; Add a Jooble key for Bulgaria/);
+    const ids = (await prisma().agentCandidate.findMany({ orderBy: { externalId: "asc" } })).map((candidate) => candidate.externalId);
+    expect(ids).toEqual(["a", "b", "c", "q1"]);
   });
 
   it("scores with Jev when Settings → Scoring chose it, without an AI provider (#274)", async () => {

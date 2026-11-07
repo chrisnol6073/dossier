@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { CompanyBoard } from "./company-boards-list";
 import type { FoundPosting, JobSource, JSearchHost, SearchPage, SearchQuery } from "./search";
 
 // What every job source implements (E14-1). Adapters turn a source's own
@@ -14,6 +15,10 @@ export type SourceCredentials = {
   ADZUNA: { appId: string; key: string };
   ARBEITSAGENTUR: Record<string, never>;
   FREEHIRE: Record<string, never>;
+  /** Keys by country code ("ie"), "*" for a key used for any country: Jooble gives one key per country site. */
+  JOOBLE: { keys: Readonly<Record<string, string>> };
+  /** The company job boards to read (Greenhouse, Lever, Ashby). */
+  COMPANY_BOARDS: { boards: readonly CompanyBoard[] };
 };
 
 export type RequestContext = {

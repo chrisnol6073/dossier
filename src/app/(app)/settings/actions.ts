@@ -15,6 +15,7 @@ import { deleteAllBackups } from "@/lib/backups";
 import { env } from "@/lib/env";
 import { JobSearchError, testSource } from "@/lib/job-search";
 import { credentialsFor, jobSearchView, loadJobSearchConfig, requestContext } from "@/lib/job-search/config";
+import { parseCompanyBoards } from "@/lib/job-search/company-boards-list";
 import { JOB_SOURCES, JSEARCH_HOSTS } from "@/lib/job-search/search";
 import { cancelJob, startJob } from "@/lib/jobs/runner";
 import { checkForUpdate } from "@/lib/update-check";
@@ -135,11 +136,23 @@ export const saveJobSource = action(
   },
 );
 
-/** Saves where the JSearch key is from, or the Adzuna app ID, which isn't a secret. */
+/** Saves where the JSearch key is from, the Adzuna app ID, or the company boards list, none of which are secrets. */
 export const saveJobSearchDetails = action(
-  z.strictObject({ jsearchHost: z.enum(JSEARCH_HOSTS).optional(), adzunaAppId: z.string().trim().max(200).optional() }),
-  async ({ jsearchHost, adzunaAppId }) => {
-    await saveSettings({ jsearchHost, ...(adzunaAppId === undefined ? {} : { adzunaAppId: adzunaAppId || null }) });
+  z.strictObject({
+    jsearchHost: z.enum(JSEARCH_HOSTS).optional(),
+    adzunaAppId: z.string().trim().max(200).optional(),
+    /** Empty goes back to the built-in list. */
+    companyBoards: z.string().trim().max(20_000).optional(),
+  }),
+  async ({ jsearchHost, adzunaAppId, companyBoards }) => {
+    if (companyBoards && parseCompanyBoards(companyBoards).length === 0) {
+      throw new ActionError("None of those lines is a board. Write one a line, like greenhouse:intercom Intercom.");
+    }
+    await saveSettings({
+      jsearchHost,
+      ...(adzunaAppId === undefined ? {} : { adzunaAppId: adzunaAppId || null }),
+      ...(companyBoards === undefined ? {} : { companyBoards: companyBoards || null }),
+    });
     return loadView();
   },
 );
@@ -147,14 +160,14 @@ export const saveJobSearchDetails = action(
 /** Saves a source's key, encrypted for job sources only, or removes it. The key never comes back to the browser. */
 export const saveJobSourceKey = action(
   z.object({
-    source: z.enum(["JSEARCH", "ADZUNA"]),
+    source: z.enum(["JSEARCH", "ADZUNA", "JOOBLE"]),
     change: z.discriminatedUnion("action", [
       z.object({ action: z.literal("set"), value: z.string().trim().min(1).max(1000) }),
       z.object({ action: z.literal("clear") }),
     ]),
   }),
   async ({ source, change }) => {
-    const field = source === "JSEARCH" ? "jsearchKeyEnc" : "adzunaKeyEnc";
+    const field = source === "JSEARCH" ? "jsearchKeyEnc" : source === "ADZUNA" ? "adzunaKeyEnc" : "joobleKeyEnc";
     const current = await loadSettings();
     await saveSettings({ [field]: applySecretChange(JOB_SOURCE_KEY, current[field], change) });
     return loadView();

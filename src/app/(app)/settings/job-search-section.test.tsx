@@ -21,6 +21,8 @@ const off: JobSearchSettingsView = {
   adzuna: { appId: "", keyState: "none" },
   arbeitsagentur: { offered: true, acceptedAt: null },
   freehire: { host: "freehire.me" },
+  jooble: { keyState: "none", countries: [] },
+  companyBoards: { text: "greenhouse:intercom Intercom", count: 1, builtIn: true },
 };
 const ACCEPTED = "2026-10-23T09:00:00.000Z";
 const withSource = (view: Partial<JobSearchSettingsView>): JobSearchSettingsView => ({ ...off, ...view });
@@ -36,10 +38,12 @@ beforeEach(() => {
 });
 
 describe("JobSearchSection", () => {
-  it("offers the four sources and Off, as a radio group, Off by default", () => {
+  it("offers the six sources and Off, as a radio group, Off by default", () => {
     render(<JobSearchSection initial={off} />);
     expect(screen.getByRole("heading", { name: "Job search" })).toBeInTheDocument();
     expect(screen.getAllByRole("radio").map((radio) => radio.getAttribute("aria-label"))).toEqual([
+      "Company job boards",
+      "Jooble",
       "JSearch",
       "Adzuna",
       "FreeHire",
@@ -128,7 +132,23 @@ describe("JobSearchSection", () => {
 
   it("leaves the Arbeitsagentur out when the server doesn't offer it", () => {
     render(<JobSearchSection initial={withSource({ arbeitsagentur: { offered: false, acceptedAt: null } })} />);
-    expect(screen.getAllByRole("radio").map((radio) => radio.getAttribute("aria-label"))).toEqual(["JSearch", "Adzuna", "FreeHire", "Off"]);
+    expect(screen.getAllByRole("radio").map((radio) => radio.getAttribute("aria-label"))).toEqual(["Company job boards", "Jooble", "JSearch", "Adzuna", "FreeHire", "Off"]);
+  });
+
+  it("asks for Jooble keys by country and says which are saved", () => {
+    render(<JobSearchSection initial={withSource({ source: "JOOBLE", jooble: { keyState: "set", countries: ["ie", "bg"] } })} />);
+    expect(screen.getByLabelText("Keys")).toHaveAttribute("type", "password");
+    expect(screen.getByText(/Saved for: Ireland, Bulgaria\./)).toBeInTheDocument();
+  });
+
+  it("shows the built-in company boards and saves a list of one's own", async () => {
+    render(<JobSearchSection initial={withSource({ source: "COMPANY_BOARDS" })} />);
+    const field = screen.getByLabelText("Company boards");
+    expect(field).toHaveValue("");
+    expect(screen.getByText("The built-in list (1 companies)")).toBeInTheDocument();
+    await userEvent.type(field, "lever:bolt Bolt");
+    await userEvent.tab();
+    expect(saveJobSearchDetails).toHaveBeenCalledWith({ companyBoards: "lever:bolt Bolt" });
   });
 
   it("says which FreeHire it searches, with no key to ask for", () => {

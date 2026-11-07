@@ -10,10 +10,12 @@ import { toastResult } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { JOB_SOURCES, type JobSource, type JSearchHost } from "@/lib/job-search/search";
 import { FREEHIRE_URL, JSEARCH_KEY_URLS, SOURCE_INFO, type JobSearchSettingsView } from "@/lib/job-search/sources";
 import { cn } from "@/lib/cn";
+import { countryName } from "@/lib/job-search/countries";
 
 import { saveJobSearchDetails, saveJobSource, saveJobSourceKey, testJobSource } from "./actions";
 import { SettingsSectionIntro } from "./settings-screen";
@@ -41,6 +43,7 @@ export function JobSearchSection({ initial }: { initial: JobSearchSettingsView }
   const track = useTrackSave();
   const [view, setView] = useState(initial);
   const [appId, setAppId] = useState(initial.adzuna.appId);
+  const [boards, setBoards] = useState(initial.companyBoards.builtIn ? "" : initial.companyBoards.text);
   const [connection, setConnection] = useState<Connection>({ status: "untested" });
   const source = view.source;
 
@@ -76,7 +79,13 @@ export function JobSearchSection({ initial }: { initial: JobSearchSettingsView }
     apply(toastResult(await track(saveJobSearchDetails({ adzunaAppId: appId }))));
   };
 
-  const saveKey = async (keySource: "JSEARCH" | "ADZUNA", change: { action: "set"; value: string } | { action: "clear" }) => {
+  const saveBoards = async () => {
+    if (boards.trim() === (view.companyBoards.builtIn ? "" : view.companyBoards.text.trim())) return;
+    changed();
+    apply(toastResult(await track(saveJobSearchDetails({ companyBoards: boards }))));
+  };
+
+  const saveKey = async (keySource: "JSEARCH" | "ADZUNA" | "JOOBLE", change: { action: "set"; value: string } | { action: "clear" }) => {
     changed();
     return apply(toastResult(await track(saveJobSourceKey({ source: keySource, change }))));
   };
@@ -166,6 +175,51 @@ export function JobSearchSection({ initial }: { initial: JobSearchSettingsView }
                 />
               </div>
             )}
+            {source === "JOOBLE" && (
+              <>
+                <KeyField
+                  label="Keys"
+                  keyState={view.jooble.keyState}
+                  envName="DOSSIER_JOOBLE_KEY"
+                  getKey={{ href: SOURCE_INFO.JOOBLE.keyUrl!, text: "Jooble's API page for each country (for example ie.jooble.org/api/about)" }}
+                  onSave={(change) => saveKey("JOOBLE", change)}
+                />
+                <p className="text-sm text-muted">
+                  Each Jooble key only searches the country it was made for, and allows 500 searches in total. Enter them together, one per country:{" "}
+                  <code className="font-mono text-[13px]">ie=KEY, bg=KEY, gb=KEY</code>. A key without a country is used for any country without its own.
+                  {view.jooble.countries.length > 0 &&
+                    ` Saved for: ${view.jooble.countries.map((code) => (code === "*" ? "any country" : countryName(code))).join(", ")}.`}
+                </p>
+              </>
+            )}
+            {source === "COMPANY_BOARDS" && (
+              <>
+                <Textarea
+                  label="Company boards"
+                  rows={8}
+                  spellCheck={false}
+                  textareaClassName="font-mono text-[13px]"
+                  value={boards}
+                  placeholder={view.companyBoards.builtIn ? `Using the built-in list of ${view.companyBoards.count} companies. Type your own to replace it.` : undefined}
+                  hint="One a line: greenhouse:slug, lever:slug or ashby:slug, then the company's name. The slug is in the company's careers address, like boards.greenhouse.io/intercom. Leave empty for the built-in European list."
+                  onChange={(event) => setBoards(event.target.value)}
+                  onBlur={() => void saveBoards()}
+                />
+                {view.companyBoards.builtIn && (
+                  <details className="text-sm text-muted">
+                    <summary className="cursor-pointer">The built-in list ({view.companyBoards.count} companies)</summary>
+                    <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap font-mono text-[12.5px]">{view.companyBoards.text}</pre>
+                    <Button variant="secondary" className="mt-2" onClick={() => setBoards(view.companyBoards.text)}>
+                      Copy it into the field to edit
+                    </Button>
+                  </details>
+                )}
+                <p className="text-sm text-muted">
+                  No key needed. Each search reads every board (kept for half an hour) and keeps the postings whose title has your keywords, in your country or remote across
+                  Europe. Separate alternatives with commas: <code className="font-mono text-[13px]">QA Engineer, SDET, Test Automation</code>.
+                </p>
+              </>
+            )}
             {source === "ARBEITSAGENTUR" && (
               <>
                 <ArbeitsagenturNote accepted={Boolean(view.arbeitsagentur.acceptedAt)} onAccept={acceptArbeitsagentur} />
@@ -224,7 +278,7 @@ function ConnectionStatus({ connection, source }: { connection: Connection; sour
         ? ["bg-error", "text-error", connection.message]
         : connection.status === "testing"
           ? ["bg-status-offer", "text-muted", "Sending a small search…"]
-          : ["bg-faint", "text-muted", source === "JSEARCH" ? "Not tested since your last change · a test uses one search from your plan" : "Not tested since your last change"];
+          : ["bg-faint", "text-muted", source === "JSEARCH" || source === "JOOBLE" ? "Not tested since your last change · a test uses one search from your plan" : "Not tested since your last change"];
   return (
     <p role="status" className={cn("flex items-center gap-2 text-control", text)}>
       <span aria-hidden className={cn("size-2 flex-none rounded-full", dot)} />

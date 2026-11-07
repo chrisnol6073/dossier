@@ -5,12 +5,17 @@ import { useState } from "react";
 
 import { useTrackSave } from "@/components/save-tracker";
 import { toastResult } from "@/components/toast";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
 import { useAutosave } from "@/hooks/use-autosave";
 import type { Country } from "@/lib/job-search/countries";
-import { searchHref, type JobSource, type SearchQuery } from "@/lib/job-search/search";
+import { AGENT_MAX_SEARCHES, EUROPE_QA_EXCLUDED, EUROPE_QA_KEYWORDS, EUROPE_QA_SEARCHES, type AgentSearch } from "@/lib/agent/searches";
+import { EMPTY_QUERY, JOB_SOURCES, searchHref, type JobSource, type SearchQuery } from "@/lib/job-search/search";
+import { SOURCE_INFO } from "@/lib/job-search/sources";
 import type { Scorer } from "@/lib/scoring/scorers";
 
 import { saveAgentSettings } from "../agent/actions";
@@ -26,6 +31,8 @@ export type AgentSettings = {
   maxScores: number;
   maxDrafts: number;
   autoDraft: boolean;
+  searches: AgentSearch[];
+  excludeTitles: string;
 };
 
 const HOURS = Array.from({ length: 24 }, (_, hour) => hour);
@@ -68,6 +75,20 @@ export function AgentSection({
     });
   };
   const { flush } = useAutosave(settings.query, (query) => track(saveAgentSettings({ query })));
+  const more = useAutosave(settings.searches, (searches) => track(saveAgentSettings({ searches })));
+  const exclude = useAutosave(settings.excludeTitles, (excludeTitles) => track(saveAgentSettings({ excludeTitles })));
+  const setSearches = (searches: AgentSearch[]) => setSettings((current) => ({ ...current, searches }));
+  const editSearch = (index: number, patch: Partial<AgentSearch>) =>
+    setSearches(settings.searches.map((search, at) => (at === index ? { ...search, ...patch } : search)));
+  const addEuropeSet = () => {
+    const known = new Set(settings.searches.map((search) => JSON.stringify(search)));
+    const added = EUROPE_QA_SEARCHES.filter((search) => !known.has(JSON.stringify(search)));
+    setSettings((current) => ({
+      ...current,
+      searches: [...current.searches, ...added].slice(0, AGENT_MAX_SEARCHES),
+      excludeTitles: current.excludeTitles.trim() ? current.excludeTitles : EUROPE_QA_EXCLUDED,
+    }));
+  };
   const setQuery = (patch: Partial<SearchQuery>) => {
     setErrors({});
     setSettings((current) => ({ ...current, query: { ...current.query, ...patch } }));
@@ -90,7 +111,7 @@ export function AgentSection({
   return (
     <>
       <SettingsSectionIntro title="Job agent">
-        Once a day it runs one search, scores the new postings against your profile, and keeps the best on the Agent screen. It never sends or applies.
+        Once a day it runs its searches, scores the new postings against your profile, and keeps the best on the Agent screen. It never sends or applies.
       </SettingsSectionIntro>
 
       {source === "ARBEITSAGENTUR" ? (
@@ -140,6 +161,80 @@ export function AgentSection({
             <RemoteOnlyField value={settings.query} onChange={setQuery} source={source} />
           </div>
         </div>
+      </Card>
+
+      <Card padding="none" className="flex flex-col gap-4 px-7 py-[26px]">
+        <div className="flex flex-col gap-1">
+          <h3 className="text-field font-medium">More searches</h3>
+          <p className="text-meta text-muted">
+            Each run makes these searches too, each through its own source, so one run can cover several countries. Company job boards cost nothing; Jooble and
+            JSearch searches count against your key&apos;s quota.
+          </p>
+        </div>
+        {settings.searches.length > 0 && (
+          <ul className="flex flex-col gap-3" onBlur={more.flush}>
+            {settings.searches.map((search, index) => (
+              <li key={index} className="grid grid-cols-1 items-end gap-3 rounded-card border border-line-card p-3 sm:grid-cols-[minmax(170px,1.2fr)_1fr_2fr_auto]">
+                <Select
+                  label="Source"
+                  value={search.source ?? ""}
+                  onChange={(event) => editSearch(index, { source: (event.target.value || null) as JobSource | null })}
+                >
+                  <option value="">{source ? `As in Job search (${SOURCE_INFO[source].name})` : "As in Job search"}</option>
+                  {JOB_SOURCES.filter((entry) => entry !== "ARBEITSAGENTUR").map((entry) => (
+                    <option key={entry} value={entry}>
+                      {SOURCE_INFO[entry].name}
+                    </option>
+                  ))}
+                </Select>
+                <Select label="Country" value={search.country} onChange={(event) => editSearch(index, { country: event.target.value })}>
+                  <option value="">Choose…</option>
+                  {countries.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Select>
+                <Input label="What" value={search.keywords} placeholder={EUROPE_QA_KEYWORDS} onChange={(event) => editSearch(index, { keywords: event.target.value })} />
+                <Button variant="secondary" onClick={() => setSearches(settings.searches.filter((_, at) => at !== index))}>
+                  Remove
+                </Button>
+                <Input
+                  label="Where (optional)"
+                  value={search.place}
+                  placeholder="City"
+                  onChange={(event) => editSearch(index, { place: event.target.value })}
+                />
+                <Checkbox
+                  className="self-center sm:col-span-3"
+                  label="Remote only"
+                  checked={search.remoteOnly}
+                  onChange={(event) => editSearch(index, { remoteOnly: event.target.checked })}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="secondary"
+            disabled={settings.searches.length >= AGENT_MAX_SEARCHES}
+            onClick={() => setSearches([...settings.searches, { ...EMPTY_QUERY, source: null, keywords: EUROPE_QA_KEYWORDS, country: settings.query.country }])}
+          >
+            Add a search
+          </Button>
+          <Button variant="secondary" disabled={settings.searches.length >= AGENT_MAX_SEARCHES} onClick={addEuropeSet}>
+            Add the European QA set
+          </Button>
+        </div>
+        <Input
+          label="Leave out titles with"
+          hint="Comma-separated words or phrases, matched as whole words: Java leaves out “Java SDET” but not “JavaScript”."
+          value={settings.excludeTitles}
+          placeholder={EUROPE_QA_EXCLUDED}
+          onChange={(event) => setSettings((current) => ({ ...current, excludeTitles: event.target.value }))}
+          onBlur={exclude.flush}
+        />
       </Card>
 
       <Card padding="none" className="grid gap-x-[18px] gap-y-5 px-7 py-[26px] sm:grid-cols-2">
@@ -196,7 +291,7 @@ export function AgentSection({
       </Card>
 
       <p className="text-meta text-muted">
-        One search a day, and at most three in any 24 hours. Each run scores up to {plural(settings.maxScores, "posting", "postings")}
+        One run a day, and at most three in any 24 hours; each run makes {plural(1 + settings.searches.length, "search", "searches")}. Each run scores up to {plural(settings.maxScores, "posting", "postings")}
         {settings.autoDraft ? ` and prepares up to ${plural(settings.maxDrafts, "draft", "drafts")}` : ""}. Scoring and drafts go to your AI provider with your profile, as a new application does; the job source only gets the search.
       </p>
     </>
