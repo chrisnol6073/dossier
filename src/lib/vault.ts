@@ -55,12 +55,14 @@ export function noteName(text: string): string {
 function yaml(value: string | number | boolean | null | undefined): string {
   if (value === null || value === undefined || value === "") return '""';
   if (typeof value !== "string") return String(value);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
   return /^[\w .,@()/+-]+$/.test(value) && !/^[\d.+-]/.test(value) && !/^(true|false|null|yes|no)$/i.test(value) ? value : JSON.stringify(value);
 }
 
 function frontmatter(fields: Record<string, string | number | boolean | null | undefined | string[]>): string {
   const lines = Object.entries(fields)
-    .filter(([, value]) => value !== undefined)
+    // Empty fields are left out, so Obsidian's Properties stay tidy.
+    .filter(([, value]) => value !== undefined && value !== null && value !== "")
     .map(([key, value]) => (Array.isArray(value) ? `${key}: [${value.map(yaml).join(", ")}]` : `${key}: ${yaml(value)}`));
   return `---\n${lines.join("\n")}\n---\n`;
 }

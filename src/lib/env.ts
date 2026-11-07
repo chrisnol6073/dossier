@@ -79,8 +79,8 @@ const schema = z.object({
         error: "JOBS_IRELAND_BACKUP_RETENTION_DAYS must be at least 1.",
       }),
     ),
-  // The daily usage ping (usage-ping.ts): unset, Jobs Ireland asks after
-  // sign-in and sends nothing before a yes; on or off answers for good.
+  // Left from the usage ping, which Jobs Ireland removed: still read so an
+  // old .env that sets it doesn't stop the server, and otherwise unused.
   JOBS_IRELAND_TELEMETRY: optional(
     z
       .string()
