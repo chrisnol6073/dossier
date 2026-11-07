@@ -140,6 +140,9 @@ const schema = z.object({
   // Company job boards to read, "greenhouse:intercom Intercom" one a line or
   // comma-separated; unset uses the built-in European list.
   JOBS_IRELAND_COMPANY_BOARDS: optional(z.string()),
+  // An Obsidian vault folder (mounted into the container): Jobs Ireland keeps
+  // a note per application and job find under "Jobs Ireland/" in it.
+  JOBS_IRELAND_VAULT_DIR: optional(z.string().trim().transform((dir) => path.resolve(dir))),
   // Off takes the Bundesagentur für Arbeit out everywhere (#223): it isn't an
   // official API, so a server can choose not to offer it. Unset means on.
   JOBS_IRELAND_JOBS_ARBEITSAGENTUR: optional(

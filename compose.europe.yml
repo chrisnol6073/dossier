@@ -1,6 +1,7 @@
-# Jobs Ireland: builds this repository's code into a local image, and passes the Jooble and
-# company boards settings through. Used together with compose.production.yml;
-# .env sets COMPOSE_FILE so a plain `docker compose up -d --build` uses both.
+# Jobs Ireland: builds this repository's code into a local image, and passes
+# the Jooble, company boards and Obsidian vault settings through. Used
+# together with compose.production.yml; .env sets COMPOSE_FILE so a plain
+# `docker compose up -d --build` uses both.
 
 services:
   app:
@@ -13,3 +14,9 @@ services:
       JOBS_IRELAND_JOOBLE_KEY: ${JOBS_IRELAND_JOOBLE_KEY:-}
       # Your own company boards list, "greenhouse:intercom Intercom" comma-separated; unset uses the built-in European list.
       JOBS_IRELAND_COMPANY_BOARDS: ${JOBS_IRELAND_COMPANY_BOARDS:-}
+      # The Obsidian vault, mounted below: notes go in its "Jobs Ireland" folder.
+      JOBS_IRELAND_VAULT_DIR: /vault
+    volumes:
+      # Your Obsidian vault folder on this computer (JOBS_IRELAND_VAULT_PATH in .env);
+      # without one, a "vault" folder next to this file.
+      - ${JOBS_IRELAND_VAULT_PATH:-./vault}:/vault

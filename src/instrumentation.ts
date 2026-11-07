@@ -22,6 +22,10 @@ export async function register() {
     const { startInboxSchedule } = await import("@/lib/google/sync");
     startInboxSchedule();
 
+    // Notes in the Obsidian vault, while JOBS_IRELAND_VAULT_DIR is set.
+    const { startVaultSchedule } = await import("@/lib/vault");
+    startVaultSchedule();
+
     // The job agent's daily run, while it's on (E16-4).
     const { startAgentSchedule } = await import("@/lib/agent/schedule");
     startAgentSchedule();

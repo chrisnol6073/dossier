@@ -146,6 +146,9 @@ export const settingsSchema = z.object({
   educationOrder: z.enum(["date", "manual"]).catch("date"),
   /** Why the last nightly backup failed; null once one works again (E10-7). */
   backupProblem: z.string().nullable().catch(null),
+  /** When notes were last written to the Obsidian vault, and why the last try failed, if it did. */
+  vaultSyncedAt: z.string().nullable().catch(null),
+  vaultProblem: z.string().nullable().catch(null),
   // Job search (E14-4). Null means "not set in the app": JOBS_IRELAND_JOBS_SOURCE
   // decides. "OFF" is a choice. Each source keeps its own key, encrypted
   // like the AI key, so switching back and forth loses nothing.

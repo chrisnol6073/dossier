@@ -23,11 +23,13 @@ import { scoringProblem } from "@/lib/scoring";
 import { loadScoringConfig, scoringView } from "@/lib/scoring/config";
 import { loadSettings } from "@/lib/settings-data";
 import { availableUpdate } from "@/lib/update-check";
+import { vaultDir } from "@/lib/vault";
 
 import { AgentSection } from "./agent-section";
 import { AiBehaviour } from "./ai-behaviour";
 import { AiProviderSection } from "./ai-provider-section";
 import { DataSection } from "./data-section";
+import { VaultCard } from "./vault-card";
 import { DocumentsSection } from "./documents-section";
 import { GoogleSection } from "./google-section";
 import { GoogleNotice } from "./google-notice";
@@ -106,6 +108,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           address={mcpUrl(env.JOBS_IRELAND_PUBLIC_URL ?? (await requestOrigin()))}
         />
       ) : section === "data" ? (
+        <>
         <DataSection
           hasApiKey={[settings.apiKeyEnc, settings.jsearchKeyEnc, settings.adzunaKeyEnc].some((key) => key !== null)}
           exportName={exportFileName()}
@@ -118,6 +121,10 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           }}
           jobRetentionHours={settings.jobRetentionHours}
         />
+        <VaultCard
+          initial={{ dir: vaultDir(), lastRun: whenRan(settings.vaultSyncedAt ? new Date(settings.vaultSyncedAt) : null), problem: settings.vaultProblem }}
+        />
+        </>
       ) : section === "documents" ? (
         <DocumentsSection
           // Only these fields: the settings also hold the encrypted API key, which never leaves the server.

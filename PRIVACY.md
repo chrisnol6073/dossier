@@ -116,6 +116,10 @@ Self-hosting alone doesn't make a deployment compliant. Jobs Ireland's code show
 When someone asks for their data, **Export** in Settings → Your data gives everything Jobs Ireland keeps except task data and failed sign-ins, which expire on their own, and the mail from Gmail and the Google account, which belong to the mailbox: the mail is still in Gmail. Deleting an application or **Delete everything** removes data as described [above](#what-deleting-removes).
 
 
+## Obsidian vault
+
+With `JOBS_IRELAND_VAULT_PATH` set, notes about your applications and the job agent's finds (including your private notes on applications) are written as Markdown files into that folder on your own computer. Nothing is sent anywhere; if your vault syncs to a cloud service (Obsidian Sync, OneDrive, iCloud), those notes go wherever the vault goes.
+
 ## Contact
 
 Jobs Ireland is maintained by Christopher Nolan: chrisnol6073@gmail.com. It sends no usage ping or statistics anywhere.

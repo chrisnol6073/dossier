@@ -16,6 +16,7 @@ import { env } from "@/lib/env";
 import { JobSearchError, testSource } from "@/lib/job-search";
 import { credentialsFor, jobSearchView, loadJobSearchConfig, requestContext } from "@/lib/job-search/config";
 import { parseCompanyBoards } from "@/lib/job-search/company-boards-list";
+import { syncVaultNow } from "@/lib/vault";
 import { JOB_SOURCES, JSEARCH_HOSTS } from "@/lib/job-search/search";
 import { cancelJob, startJob } from "@/lib/jobs/runner";
 import { checkForUpdate } from "@/lib/update-check";
@@ -173,6 +174,18 @@ export const saveJobSourceKey = action(
     return loadView();
   },
 );
+
+/** Settings → Your data → Write notes now: the Obsidian vault's notes, at once. */
+export const syncVaultAction = action(z.object({}), async () => {
+  let result: Awaited<ReturnType<typeof syncVaultNow>>;
+  try {
+    result = await syncVaultNow();
+  } catch (error) {
+    throw new ActionError(`The notes couldn't be written: ${error instanceof Error ? error.message : "unknown error"}.`);
+  }
+  if (!result) throw new ActionError("No vault is set: put JOBS_IRELAND_VAULT_PATH in .env and restart.");
+  return result;
+});
 
 /** "Test connection": the smallest request the chosen source takes, timed. */
 export const testJobSource = action(z.object({}), async () => {

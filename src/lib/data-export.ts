@@ -65,6 +65,8 @@ export const INSTALL_SETTINGS: readonly string[] = [
   "latestVersionUrl",
   "updateCheckDay",
   "updateDismissed",
+  "vaultSyncedAt",
+  "vaultProblem",
   "googleClientId",
   "googleClientSecretEnc",
   "browserTimeZone",

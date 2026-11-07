@@ -30,3 +30,23 @@ In PowerShell, from this folder (`source\repos\dossier`):
    - **Profile:** import your master CV (Christopher_Nolan_CV.docx) so scoring and drafts have your experience.
 
 After you pull new changes, run `docker compose up -d --build`. `docker compose stop` stops it, and your data stays in Docker volumes.
+
+## Obsidian vault
+
+Set `JOBS_IRELAND_VAULT_PATH` in `.env` to your vault folder, for example:
+
+```
+JOBS_IRELAND_VAULT_PATH=C:/Users/user1/Documents/Obsidian Vault
+```
+
+then run `docker compose up -d`. Every 15 minutes, and after each job agent run, Jobs Ireland writes into a **Jobs Ireland** folder in the vault:
+
+- `Applications/` – one note per application: status, dates, how you match, your notes and the posting.
+- `Job finds/` – one note per job the agent scored at or above your minimum score.
+- `Jobs Ireland.md` – an overview with links to all of them.
+
+Jobs Ireland only rewrites the part of each note above its `jobs-ireland:end` line; write your own notes below it and they're kept. **Settings → Your data → Obsidian vault** shows when the notes were last written and has a **Write notes now** button.
+
+## Claude and the ai-job-search workspace
+
+Claude Code can use Jobs Ireland through its MCP connector (Settings → MCP connector): `claude mcp add --transport http jobs-ireland http://localhost:3001/api/mcp`, then `/mcp` to sign in. The ai-job-search workspace already has this in its `.mcp.json`; see its `docs/JOBS-IRELAND.md`.

@@ -17,6 +17,7 @@ import { prisma } from "@/lib/prisma";
 import { loadProfile } from "@/lib/profile-data";
 import { loadPostingScorer, scoringProblem } from "@/lib/scoring";
 import { loadSettings } from "@/lib/settings-data";
+import { syncVaultNow } from "@/lib/vault";
 
 import { agentDedupeKey, candidateData } from "./candidates";
 import { agentSearchPlan, excludedTerms, mergePostings } from "./searches";
@@ -188,5 +189,7 @@ export async function runAgentScan({ manual }: { manual: boolean }, context: Job
         : drafted > 0
           ? `${waiting} Preparing ${drafted === 1 ? "a draft for the best one" : `drafts for the best ${drafted}`}.`
           : waiting;
+  // The new finds in the Obsidian vault too, when one is set; a failure there doesn't fail the run.
+  await syncVaultNow().catch(() => {});
   return finish({ ...counts, scored, drafted, message: `${message}${searchedNote}` });
 }
