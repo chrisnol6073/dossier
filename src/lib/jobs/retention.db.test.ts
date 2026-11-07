@@ -16,7 +16,7 @@ vi.mock("@/lib/prisma", async () => {
   return { prisma: db.client };
 });
 const dataDir = vi.hoisted(() => ({ path: "" }));
-vi.mock("@/lib/env", () => ({ env: { get DOSSIER_DATA_DIR() { return dataDir.path; }, DOSSIER_SECRET: "s".repeat(32) } }));
+vi.mock("@/lib/env", () => ({ env: { get JOBS_IRELAND_DATA_DIR() { return dataDir.path; }, JOBS_IRELAND_SECRET: "s".repeat(32) } }));
 
 const prisma = () => db.client!;
 const now = new Date("2026-10-18T12:00:00Z");

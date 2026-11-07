@@ -5,7 +5,7 @@ import { isAiUsable, resolveAiConfig } from "./config";
 import { AiError } from "./errors";
 import { createProvider } from "./index";
 
-vi.mock("@/lib/env", () => ({ env: { DOSSIER_SECRET: "a".repeat(32) } }));
+vi.mock("@/lib/env", () => ({ env: { JOBS_IRELAND_SECRET: "a".repeat(32) } }));
 vi.mock("@/lib/prisma", () => ({ prisma: {} }));
 const saved = vi.hoisted(() => ({ settings: { provider: null, baseUrl: null, model: null, apiKeyEnc: null } as Record<string, unknown> }));
 vi.mock("@/lib/settings-data", () => ({ loadSettings: async () => saved.settings }));
@@ -25,11 +25,11 @@ describe("resolveAiConfig", () => {
     });
   });
 
-  it("uses the DOSSIER_AI_* variables until a provider is saved", () => {
+  it("uses the JOBS_IRELAND_AI_* variables until a provider is saved", () => {
     const config = resolveAiConfig(nothingSaved, {
-      DOSSIER_AI_PROVIDER: "anthropic",
-      DOSSIER_AI_KEY: "sk-env",
-      DOSSIER_AI_TIMEOUT_SECONDS: 90,
+      JOBS_IRELAND_AI_PROVIDER: "anthropic",
+      JOBS_IRELAND_AI_KEY: "sk-env",
+      JOBS_IRELAND_AI_TIMEOUT_SECONDS: 90,
     });
     expect(config).toMatchObject({
       provider: "ANTHROPIC",
@@ -41,7 +41,7 @@ describe("resolveAiConfig", () => {
   });
 
   it("knows Mistral's address and a default model", () => {
-    expect(resolveAiConfig(nothingSaved, { DOSSIER_AI_PROVIDER: "mistral", DOSSIER_AI_KEY: "mk-env" })).toMatchObject({
+    expect(resolveAiConfig(nothingSaved, { JOBS_IRELAND_AI_PROVIDER: "mistral", JOBS_IRELAND_AI_KEY: "mk-env" })).toMatchObject({
       provider: "MISTRAL",
       baseUrl: "https://api.mistral.ai/v1",
       model: "mistral-medium-latest",
@@ -51,7 +51,7 @@ describe("resolveAiConfig", () => {
   });
 
   it("finds LM Studio on the Docker host, as patient as a local model", () => {
-    expect(resolveAiConfig(nothingSaved, { DOSSIER_AI_PROVIDER: "lmstudio" })).toMatchObject({
+    expect(resolveAiConfig(nothingSaved, { JOBS_IRELAND_AI_PROVIDER: "lmstudio" })).toMatchObject({
       provider: "LMSTUDIO",
       baseUrl: "http://host.docker.internal:1234",
       model: null,
@@ -61,14 +61,14 @@ describe("resolveAiConfig", () => {
 
   it("prefers what's saved in Settings, with its own key", () => {
     const saved = { provider: "OPENAI" as const, baseUrl: "https://llm.example/v1", model: "gpt-x", apiKeyEnc: encryptApiKey("sk-saved") };
-    const config = resolveAiConfig(saved, { DOSSIER_AI_PROVIDER: "local", DOSSIER_AI_URL: "http://ollama:11434", DOSSIER_AI_KEY: "sk-env" });
+    const config = resolveAiConfig(saved, { JOBS_IRELAND_AI_PROVIDER: "local", JOBS_IRELAND_AI_URL: "http://ollama:11434", JOBS_IRELAND_AI_KEY: "sk-env" });
     expect(config).toMatchObject({ provider: "OPENAI", baseUrl: "https://llm.example/v1", model: "gpt-x", apiKey: "sk-saved", timeoutMs: 120_000 });
   });
 
   it("lends the env key only to a saved provider of the same kind", () => {
     const saved = { provider: "ANTHROPIC" as const, baseUrl: null, model: null, apiKeyEnc: null };
-    expect(resolveAiConfig(saved, { DOSSIER_AI_PROVIDER: "anthropic", DOSSIER_AI_KEY: "sk-env" }).apiKey).toBe("sk-env");
-    expect(resolveAiConfig(saved, { DOSSIER_AI_PROVIDER: "openai", DOSSIER_AI_KEY: "sk-env" }).apiKey).toBeNull();
+    expect(resolveAiConfig(saved, { JOBS_IRELAND_AI_PROVIDER: "anthropic", JOBS_IRELAND_AI_KEY: "sk-env" }).apiKey).toBe("sk-env");
+    expect(resolveAiConfig(saved, { JOBS_IRELAND_AI_PROVIDER: "openai", JOBS_IRELAND_AI_KEY: "sk-env" }).apiKey).toBeNull();
   });
 
   it("reports a saved key it can't read instead of failing", () => {

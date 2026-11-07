@@ -2,7 +2,7 @@ The commands on this page are for Docker Compose: run them from your Jobs Irelan
 
 - **Export:** **Settings → Your data → Export** downloads everything (profile, themes, settings, applications with their documents, chat, notes and history) as one JSON file. Your API key is left out unless you tick the box.
 - **Import:** importing such a file replaces all data in one step, after saving a backup of what was there to the data directory's `backups` folder.
-- **Nightly backups** (on by default) write the same export to `/data/backups` in the app's volume at 03:00 server time, keeping `DOSSIER_BACKUP_RETENTION_DAYS` days of them. Copy them off the server now and then: `docker compose cp app:/data/backups ./backups`.
+- **Nightly backups** (on by default) write the same export to `/data/backups` in the app's volume at 03:00 server time, keeping `JOBS_IRELAND_BACKUP_RETENTION_DAYS` days of them. Copy them off the server now and then: `docker compose cp app:/data/backups ./backups`.
 - **Database dumps:** back up PostgreSQL itself too:
 
   ```bash
@@ -17,7 +17,7 @@ The commands on this page are for Docker Compose: run them from your Jobs Irelan
   docker compose start app
   ```
 
-Keep a copy of `.env` with your backups: saved API keys can't be read without its `DOSSIER_SECRET` (an export with the key included carries it in plain text instead).
+Keep a copy of `.env` with your backups: saved API keys can't be read without its `JOBS_IRELAND_SECRET` (an export with the key included carries it in plain text instead).
 
 
 ---

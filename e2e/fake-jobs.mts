@@ -1,6 +1,6 @@
 // A stand-in for the job sources (E14-9), started by playwright.config.ts.
 // The app sends each source's requests to http://localhost:<port>/<source>
-// (DOSSIER_JOBS_TEST_BASE_URL), and this answers in that source's own shape,
+// (JOBS_IRELAND_JOBS_TEST_BASE_URL), and this answers in that source's own shape,
 // so the adapters' real request and response handling runs end to end.
 
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
@@ -86,7 +86,7 @@ function startups(path: string, request: IncomingMessage, response: ServerRespon
 
 /** How many JSearch searches were asked for, so a spec can tell a kept search came from the database. */
 let searches = 0;
-/** The usage pings the app sent here (DOSSIER_USAGE_PING_TEST_URL), so a spec can tell whether one went (#172). */
+/** The usage pings the app sent here (JOBS_IRELAND_USAGE_PING_TEST_URL), so a spec can tell whether one went (#172). */
 const pings: unknown[] = [];
 
 createServer((request, response) => {
@@ -105,7 +105,7 @@ createServer((request, response) => {
     });
     return;
   }
-  // Jev (DOSSIER_TYPESAFE_TEST_BASE_URL, #274): each question answered from
+  // Jev (JOBS_IRELAND_TYPESAFE_TEST_BASE_URL, #274): each question answered from
   // its id and line, so a spec knows the score: every Score at its top level
   // but past work one below, a line with "years", "skills" or "experience"
   // required, and shown when it's about product design or Figma.
@@ -134,7 +134,7 @@ createServer((request, response) => {
     });
     return;
   }
-  // The update check (DOSSIER_UPDATES_TEST_BASE_URL): no release is out, so
+  // The update check (JOBS_IRELAND_UPDATES_TEST_BASE_URL): no release is out, so
   // what a test stores as the latest release stays as it is.
   if (url.pathname === "/github/repos/chrisnol6073/dossier/releases/latest") return send(response, 404, { message: "Not Found" });
 

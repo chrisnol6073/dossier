@@ -10,7 +10,7 @@ import { appVersion } from "@/lib/version";
 // says what it is and links to the page explaining it, so a site can tell
 // Jobs Ireland apart and opt out in robots.txt ("User-agent: Jobs Ireland"). In the
 // end-to-end tests every request goes to the fake server instead
-// (DOSSIER_JOBS_TEST_BASE_URL/startups/<host>/<path>).
+// (JOBS_IRELAND_JOBS_TEST_BASE_URL/startups/<host>/<path>).
 
 export const STARTUPS_INFO_URL = "https://github.com/chrisnol6073/dossier/blob/main/PRIVACY.md#startups";
 export const STARTUPS_USER_AGENT = `Mozilla/5.0 (compatible; JobsIreland/${appVersion}; +${STARTUPS_INFO_URL})`;
@@ -25,7 +25,7 @@ export class SourceError extends Error {
 }
 
 /** Where a request really goes: the address itself, or the fake server's copy of it in the end-to-end tests. */
-export function testAddress(url: string, base = env.DOSSIER_JOBS_TEST_BASE_URL): string {
+export function testAddress(url: string, base = env.JOBS_IRELAND_JOBS_TEST_BASE_URL): string {
   if (!base) return url;
   const { host, pathname, search } = new URL(url);
   return `${base.replace(/\/+$/, "")}/startups/${host}${pathname}${search}`;
@@ -68,7 +68,7 @@ export async function getJson(url: string, options: { signal?: AbortSignal } = {
  * ended up after redirects, as the real address even in the tests.
  */
 export async function getSitePage(url: string, { timeoutMs }: { timeoutMs?: number } = {}): Promise<FetchedPage> {
-  const base = env.DOSSIER_JOBS_TEST_BASE_URL;
+  const base = env.JOBS_IRELAND_JOBS_TEST_BASE_URL;
   if (!base) return fetchHtml(url, { timeoutMs, userAgent: STARTUPS_USER_AGENT });
   const page = await fetchHtml(testAddress(url, base), { timeoutMs, userAgent: STARTUPS_USER_AGENT, lookup: dnsLookup });
   if (!page.ok) return page;

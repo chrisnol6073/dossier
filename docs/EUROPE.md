@@ -17,7 +17,7 @@ In PowerShell, from this folder (`source\repos\dossier`):
    docker compose build app
    docker run --rm -it dossier-europe:local hash-password
    ```
-   Type your password twice. Copy the line it prints (it starts with `argon2id:`) into `.env`, replacing `paste-the-argon2id-hash-here` in `DOSSIER_PASSWORD=`.
+   Type your password twice. Copy the line it prints (it starts with `argon2id:`) into `.env`, replacing `paste-the-argon2id-hash-here` in `JOBS_IRELAND_PASSWORD=`.
 2. **Start it:**
    ```powershell
    docker compose up -d

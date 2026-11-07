@@ -4,7 +4,7 @@
 export const SCORERS = ["AI", "JEV"] as const;
 export type Scorer = (typeof SCORERS)[number];
 
-/** Like the job sources' keys: saved here, from DOSSIER_TYPESAFE_KEY, missing, or saved under another DOSSIER_SECRET. */
+/** Like the job sources' keys: saved here, from JOBS_IRELAND_TYPESAFE_KEY, missing, or saved under another JOBS_IRELAND_SECRET. */
 export type ScoringKeyState = "none" | "set" | "unreadable" | "env";
 
 /** What Settings → Scoring shows: the choice and the key's state, never the key. */

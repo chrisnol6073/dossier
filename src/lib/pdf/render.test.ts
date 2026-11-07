@@ -47,7 +47,7 @@ const fake = vi.hoisted(() => {
 });
 
 vi.mock("playwright-core", () => ({ chromium: { launch: fake.launch } }));
-vi.mock("@/lib/env", () => ({ env: { DOSSIER_SECRET: "a".repeat(32) } }));
+vi.mock("@/lib/env", () => ({ env: { JOBS_IRELAND_SECRET: "a".repeat(32) } }));
 
 const { MAX_CONCURRENT_RENDERS, renderPdf } = await import("./render");
 

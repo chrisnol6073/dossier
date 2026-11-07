@@ -12,8 +12,8 @@ import { loadSettings } from "@/lib/settings-data";
 // authorization server, as Claude's custom connectors expect it, with
 // Dynamic Client Registration and PKCE (S256 only). Adapted from Anirudh
 // Sharma's fork of Jobs Ireland. It keeps nothing in the database: clients, codes
-// and tokens are signed with keys derived from DOSSIER_SECRET, and every one
-// carries a fingerprint of DOSSIER_PASSWORD and the time the connector was
+// and tokens are signed with keys derived from JOBS_IRELAND_SECRET, and every one
+// carries a fingerprint of JOBS_IRELAND_PASSWORD and the time the connector was
 // turned on (connectorEnabledAt). So a new password, a new secret, Disconnect
 // Claude or turning the connector off and on signs Claude out.
 

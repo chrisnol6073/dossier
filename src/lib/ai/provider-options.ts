@@ -90,7 +90,7 @@ export function providerOption(provider: AiProvider) {
   return PROVIDER_OPTIONS.find((option) => option.value === provider)!;
 }
 
-/** What people see when a saved key can't be decrypted, e.g. after DOSSIER_SECRET changed. */
+/** What people see when a saved key can't be decrypted, e.g. after JOBS_IRELAND_SECRET changed. */
 export const API_KEY_UNREADABLE = "Your saved API key can't be read. Please enter it again.";
 
 /** What Settings may know about the API key: never the key itself. */

@@ -17,9 +17,9 @@ It never sends an application or an email, and never deletes or archives anythin
 2. In Claude, open **Settings → Connectors** and choose **Add custom connector**. Name it **Jobs Ireland**, paste the address, press **Add**, then **Connect**.
 3. Claude opens Jobs Ireland's sign-in. Sign in if it asks, check what Claude may do, and press **Allow**. Allow it only when you've just added the connector yourself.
 
-In Claude's command-line app, run `claude mcp add --transport http dossier https://<your Jobs Ireland address>/api/mcp`, then `/mcp` to sign in.
+In Claude's command-line app, run `claude mcp add --transport http jobs-ireland https://<your Jobs Ireland address>/api/mcp`, then `/mcp` to sign in.
 
-Claude on the web, Desktop and mobile reach Jobs Ireland from Anthropic's servers, so Jobs Ireland needs a public HTTPS address, as in the [server guides](Home#self-host-on-a-server). Claude's command-line app on the computer Jobs Ireland runs on can use `http://localhost:3000/api/mcp`. If your reverse proxy doesn't pass on the host and protocol, set `DOSSIER_PUBLIC_URL` (see [Environment variables](Environment-variables.md)).
+Claude on the web, Desktop and mobile reach Jobs Ireland from Anthropic's servers, so Jobs Ireland needs a public HTTPS address, as in the [server guides](Home#self-host-on-a-server). Claude's command-line app on the computer Jobs Ireland runs on can use `http://localhost:3000/api/mcp`. If your reverse proxy doesn't pass on the host and protocol, set `JOBS_IRELAND_PUBLIC_URL` (see [Environment variables](Environment-variables.md)).
 
 ## Other apps
 
@@ -41,7 +41,7 @@ With the connector on and no AI model chosen in Settings → AI provider, Jobs I
 
 ## Signing apps out
 
-**Disconnect all apps** in Settings → MCP connector signs Claude and every other app out; they have to connect again. Turning the connector off does too, and closes its addresses, which then answer as if they didn't exist. A new `DOSSIER_PASSWORD` or `DOSSIER_SECRET` signs them out as it does every browser. To stop one app from connecting again, remove its callback address. Jobs Ireland keeps no tokens: they're signed with `DOSSIER_SECRET`.
+**Disconnect all apps** in Settings → MCP connector signs Claude and every other app out; they have to connect again. Turning the connector off does too, and closes its addresses, which then answer as if they didn't exist. A new `JOBS_IRELAND_PASSWORD` or `JOBS_IRELAND_SECRET` signs them out as it does every browser. To stop one app from connecting again, remove its callback address. Jobs Ireland keeps no tokens: they're signed with `JOBS_IRELAND_SECRET`.
 
 ## Privacy
 

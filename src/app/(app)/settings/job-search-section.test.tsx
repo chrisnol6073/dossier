@@ -163,7 +163,7 @@ describe("JobSearchSection", () => {
 
   it("shows keys from the environment and keys that can't be read", () => {
     const { unmount } = render(<JobSearchSection initial={withSource({ source: "JSEARCH", jsearch: { host: "openwebninja", keyState: "env" } })} />);
-    expect(screen.getByLabelText("API key")).toHaveAttribute("placeholder", "Using DOSSIER_JSEARCH_KEY · type one to save it here");
+    expect(screen.getByLabelText("API key")).toHaveAttribute("placeholder", "Using JOBS_IRELAND_JSEARCH_KEY · type one to save it here");
     unmount();
     render(<JobSearchSection initial={withSource({ source: "JSEARCH", jsearch: { host: "openwebninja", keyState: "unreadable" } })} />);
     expect(screen.getByText("Your saved key can't be read. Please enter it again.")).toBeInTheDocument();

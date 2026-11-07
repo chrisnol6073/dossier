@@ -30,7 +30,7 @@ export async function register() {
     const { startStartupsSchedule } = await import("@/lib/startups/schedule");
     startStartupsSchedule();
 
-    // DOSSIER_JOBS_SOURCE=arbeitsagentur: the log says what that choice means (#223).
+    // JOBS_IRELAND_JOBS_SOURCE=arbeitsagentur: the log says what that choice means (#223).
     const { arbeitsagenturStartupNotice, loadJobSearchConfig } = await import("@/lib/job-search/config");
     try {
       const notice = arbeitsagenturStartupNotice(await loadJobSearchConfig());

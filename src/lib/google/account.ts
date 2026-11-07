@@ -94,7 +94,7 @@ export async function accessToken(group: ScopeGroup, signal?: AbortSignal): Prom
   try {
     refreshToken = decryptSecret(GOOGLE_TOKEN, account.refreshTokenEnc);
   } catch {
-    throw new GoogleError("revoked", "The saved Google access can't be read, probably since DOSSIER_SECRET changed. Connect your Google account again.");
+    throw new GoogleError("revoked", "The saved Google access can't be read, probably since JOBS_IRELAND_SECRET changed. Connect your Google account again.");
   }
   const answer = await refreshAccessToken(refreshToken, signal);
   tokens.set(ACCOUNT_ID, { token: answer.access_token, expires: Date.now() + answer.expires_in * 1000 });

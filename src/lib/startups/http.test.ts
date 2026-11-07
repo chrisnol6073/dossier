@@ -7,7 +7,7 @@ import { getJson, getSitePage, getText, STARTUPS_USER_AGENT, testAddress } from 
 const state = vi.hoisted(() => ({ base: undefined as string | undefined }));
 vi.mock("@/lib/env", () => ({
   env: {
-    get DOSSIER_JOBS_TEST_BASE_URL() {
+    get JOBS_IRELAND_JOBS_TEST_BASE_URL() {
       return state.base;
     },
   },

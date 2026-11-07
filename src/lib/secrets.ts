@@ -5,7 +5,7 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { deriveKey, type KeyPurpose } from "@/lib/keys";
 
 // Secrets kept in the database, such as API keys (SET-1, PRD §11): AES-256-GCM
-// under a key derived from DOSSIER_SECRET for that kind of secret only, a
+// under a key derived from JOBS_IRELAND_SECRET for that kind of secret only, a
 // random IV per encryption, and a version prefix so the format can change
 // later. Stored as "v1.<iv>.<ciphertext + tag>", both base64url.
 

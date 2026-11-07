@@ -361,14 +361,14 @@ function SetupSteps({ redirectUri, client }: { redirectUri: string; client: Goog
 
 const SECRET_PLACEHOLDER: Record<GoogleClientView["secretState"], string> = {
   set: "Saved · type a new secret to replace it",
-  env: "Using DOSSIER_GOOGLE_CLIENT_SECRET · type one to save it here",
+  env: "Using JOBS_IRELAND_GOOGLE_CLIENT_SECRET · type one to save it here",
   none: "Stored encrypted on your server",
   unreadable: "Stored encrypted on your server",
 };
 
 /**
  * The OAuth client: its ID, and a write-only secret, each saved when you
- * leave its field. Saved here, they override the DOSSIER_GOOGLE_CLIENT_*
+ * leave its field. Saved here, they override the JOBS_IRELAND_GOOGLE_CLIENT_*
  * variables. A different client ID disconnects the account.
  */
 function ClientCard({ initial, connected }: { initial: GoogleClientView; connected: boolean }) {
@@ -408,8 +408,8 @@ function ClientCard({ initial, connected }: { initial: GoogleClientView; connect
         <Input
           label="Client ID"
           value={id}
-          placeholder={view.idState === "env" ? "Using DOSSIER_GOOGLE_CLIENT_ID" : "…apps.googleusercontent.com"}
-          hint={view.idState === "env" ? "From DOSSIER_GOOGLE_CLIENT_ID · type one to save it here" : undefined}
+          placeholder={view.idState === "env" ? "Using JOBS_IRELAND_GOOGLE_CLIENT_ID" : "…apps.googleusercontent.com"}
+          hint={view.idState === "env" ? "From JOBS_IRELAND_GOOGLE_CLIENT_ID · type one to save it here" : undefined}
           spellCheck={false}
           autoComplete="off"
           inputClassName="font-mono text-[13.5px]"
@@ -429,7 +429,7 @@ function ClientCard({ initial, connected }: { initial: GoogleClientView; connect
             autoComplete="off"
             value={secret}
             placeholder={SECRET_PLACEHOLDER[view.secretState]}
-            error={view.secretState === "unreadable" ? "The saved secret can't be read, probably since DOSSIER_SECRET changed. Enter it again." : undefined}
+            error={view.secretState === "unreadable" ? "The saved secret can't be read, probably since JOBS_IRELAND_SECRET changed. Enter it again." : undefined}
             onChange={(event) => setSecret(event.target.value)}
             onBlur={() => void saveSecret()}
             onKeyDown={(event) => {

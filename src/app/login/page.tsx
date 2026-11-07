@@ -28,7 +28,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <LoginForm next={typeof next === "string" ? next : undefined} />
         <p className="text-meta leading-[1.6] text-pretty text-muted">
           Your password is set on the server, as a hash in{" "}
-          <code className="font-mono text-label">DOSSIER_PASSWORD</code>. Forgot it? Make a new hash with{" "}
+          <code className="font-mono text-label">JOBS_IRELAND_PASSWORD</code>. Forgot it? Make a new hash with{" "}
           <code className="font-mono text-label">hash-password</code> and restart.
         </p>
       </div>

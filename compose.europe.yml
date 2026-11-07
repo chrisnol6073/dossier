@@ -10,6 +10,6 @@ services:
     pull_policy: build
     environment:
       # Jooble keys, one per country: ie=KEY,bg=KEY (or enter them in Settings → Job search).
-      DOSSIER_JOOBLE_KEY: ${DOSSIER_JOOBLE_KEY:-}
+      JOBS_IRELAND_JOOBLE_KEY: ${JOBS_IRELAND_JOOBLE_KEY:-}
       # Your own company boards list, "greenhouse:intercom Intercom" comma-separated; unset uses the built-in European list.
-      DOSSIER_COMPANY_BOARDS: ${DOSSIER_COMPANY_BOARDS:-}
+      JOBS_IRELAND_COMPANY_BOARDS: ${JOBS_IRELAND_COMPANY_BOARDS:-}

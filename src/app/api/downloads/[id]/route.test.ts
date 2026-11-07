@@ -14,7 +14,7 @@ vi.mock("@/lib/auth/session", () => ({ getSession: vi.fn() }));
 vi.mock("@/lib/prisma", () => ({ prisma: {} }));
 vi.mock("@/lib/jobs/runner", () => ({ getJob: vi.fn(), defineJob: <T,>(definition: T) => definition }));
 const dataDir = vi.hoisted(() => ({ path: "" }));
-vi.mock("@/lib/env", () => ({ env: { get DOSSIER_DATA_DIR() { return dataDir.path; } } }));
+vi.mock("@/lib/env", () => ({ env: { get JOBS_IRELAND_DATA_DIR() { return dataDir.path; } } }));
 
 const get = (id: string) => GET(new NextRequest(`http://localhost:3000/api/downloads/${id}`), { params: Promise.resolve({ id }) });
 const done = { id: "job-1", type: "zip-pdfs", status: "DONE", step: null, error: null, result: { file: "abc-123.zip", fileName: "jobs-ireland-pdfs-2026-09-28.zip", documents: 2 } } as const;

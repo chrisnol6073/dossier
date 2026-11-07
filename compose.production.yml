@@ -1,7 +1,7 @@
 # Jobs Ireland with Docker Compose (see docs/EUROPE.md). Save this
 # file as compose.yml in a folder of its own, put POSTGRES_PASSWORD,
-# DOSSIER_PASSWORD (a hash of your password, from `docker run --rm -it
-# dossier-europe:local hash-password`) and DOSSIER_SECRET in a .env file
+# JOBS_IRELAND_PASSWORD (a hash of your password, from `docker run --rm -it
+# dossier-europe:local hash-password`) and JOBS_IRELAND_SECRET in a .env file
 # next to it, then:
 #
 #   docker compose up -d
@@ -26,44 +26,44 @@ services:
       retries: 10
 
   app:
-    image: ${DOSSIER_IMAGE:-dossier-europe:local}
+    image: ${JOBS_IRELAND_IMAGE:-dossier-europe:local}
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://dossier:${POSTGRES_PASSWORD}@db:5432/dossier
-      DOSSIER_PASSWORD: ${DOSSIER_PASSWORD:?Set DOSSIER_PASSWORD in .env to a hash from hash-password}
-      DOSSIER_SECRET: ${DOSSIER_SECRET:?Set DOSSIER_SECRET in .env}
-      DOSSIER_BACKUP_RETENTION_DAYS: ${DOSSIER_BACKUP_RETENTION_DAYS:-}
+      JOBS_IRELAND_PASSWORD: ${JOBS_IRELAND_PASSWORD:?Set JOBS_IRELAND_PASSWORD in .env to a hash from hash-password}
+      JOBS_IRELAND_SECRET: ${JOBS_IRELAND_SECRET:?Set JOBS_IRELAND_SECRET in .env}
+      JOBS_IRELAND_BACKUP_RETENTION_DAYS: ${JOBS_IRELAND_BACKUP_RETENTION_DAYS:-}
       # Your time zone, e.g. Europe/Berlin: nightly backups run at 03:00 in it.
       TZ: ${TZ:-UTC}
-      DOSSIER_AI_PROVIDER: ${DOSSIER_AI_PROVIDER:-}
-      DOSSIER_AI_URL: ${DOSSIER_AI_URL:-}
-      DOSSIER_AI_MODEL: ${DOSSIER_AI_MODEL:-}
-      DOSSIER_AI_KEY: ${DOSSIER_AI_KEY:-}
-      DOSSIER_AI_TIMEOUT_SECONDS: ${DOSSIER_AI_TIMEOUT_SECONDS:-}
+      JOBS_IRELAND_AI_PROVIDER: ${JOBS_IRELAND_AI_PROVIDER:-}
+      JOBS_IRELAND_AI_URL: ${JOBS_IRELAND_AI_URL:-}
+      JOBS_IRELAND_AI_MODEL: ${JOBS_IRELAND_AI_MODEL:-}
+      JOBS_IRELAND_AI_KEY: ${JOBS_IRELAND_AI_KEY:-}
+      JOBS_IRELAND_AI_TIMEOUT_SECONDS: ${JOBS_IRELAND_AI_TIMEOUT_SECONDS:-}
       # The daily usage ping: unset, Jobs Ireland asks after sign-in; on or off answers in advance (see Privacy in the wiki).
-      DOSSIER_TELEMETRY: ${DOSSIER_TELEMETRY:-}
+      JOBS_IRELAND_TELEMETRY: ${JOBS_IRELAND_TELEMETRY:-}
       # Defaults for Settings → Job search.
-      DOSSIER_JOBS_SOURCE: ${DOSSIER_JOBS_SOURCE:-}
-      DOSSIER_JSEARCH_KEY: ${DOSSIER_JSEARCH_KEY:-}
-      DOSSIER_JSEARCH_HOST: ${DOSSIER_JSEARCH_HOST:-}
-      DOSSIER_ADZUNA_APP_ID: ${DOSSIER_ADZUNA_APP_ID:-}
-      DOSSIER_ADZUNA_KEY: ${DOSSIER_ADZUNA_KEY:-}
-      DOSSIER_FREEHIRE_URL: ${DOSSIER_FREEHIRE_URL:-}
-      DOSSIER_JOBS_ARBEITSAGENTUR: ${DOSSIER_JOBS_ARBEITSAGENTUR:-}
+      JOBS_IRELAND_JOBS_SOURCE: ${JOBS_IRELAND_JOBS_SOURCE:-}
+      JOBS_IRELAND_JSEARCH_KEY: ${JOBS_IRELAND_JSEARCH_KEY:-}
+      JOBS_IRELAND_JSEARCH_HOST: ${JOBS_IRELAND_JSEARCH_HOST:-}
+      JOBS_IRELAND_ADZUNA_APP_ID: ${JOBS_IRELAND_ADZUNA_APP_ID:-}
+      JOBS_IRELAND_ADZUNA_KEY: ${JOBS_IRELAND_ADZUNA_KEY:-}
+      JOBS_IRELAND_FREEHIRE_URL: ${JOBS_IRELAND_FREEHIRE_URL:-}
+      JOBS_IRELAND_JOBS_ARBEITSAGENTUR: ${JOBS_IRELAND_JOBS_ARBEITSAGENTUR:-}
       # Defaults for Settings → Scoring: ai or jev (Jev by TypeSafe, with its key).
-      DOSSIER_SCORER: ${DOSSIER_SCORER:-}
-      DOSSIER_TYPESAFE_KEY: ${DOSSIER_TYPESAFE_KEY:-}
+      JOBS_IRELAND_SCORER: ${JOBS_IRELAND_SCORER:-}
+      JOBS_IRELAND_TYPESAFE_KEY: ${JOBS_IRELAND_TYPESAFE_KEY:-}
       # Gmail and Calendar: a Google OAuth client (or enter it in Settings → Google).
-      DOSSIER_GOOGLE_CLIENT_ID: ${DOSSIER_GOOGLE_CLIENT_ID:-}
-      DOSSIER_GOOGLE_CLIENT_SECRET: ${DOSSIER_GOOGLE_CLIENT_SECRET:-}
+      JOBS_IRELAND_GOOGLE_CLIENT_ID: ${JOBS_IRELAND_GOOGLE_CLIENT_ID:-}
+      JOBS_IRELAND_GOOGLE_CLIENT_SECRET: ${JOBS_IRELAND_GOOGLE_CLIENT_SECRET:-}
       # The address Jobs Ireland is reached at, for Google's redirect.
-      DOSSIER_PUBLIC_URL: ${DOSSIER_PUBLIC_URL:-}
+      JOBS_IRELAND_PUBLIC_URL: ${JOBS_IRELAND_PUBLIC_URL:-}
     # Only on the server itself: put a reverse proxy with HTTPS in front.
     ports:
-      - "127.0.0.1:${DOSSIER_PORT:-3000}:3000"
+      - "127.0.0.1:${JOBS_IRELAND_PORT:-3000}:3000"
     volumes:
       - data:/data
     # Room for Chromium, which prints the PDFs.

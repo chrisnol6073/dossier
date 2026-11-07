@@ -22,7 +22,7 @@ vi.mock("next/navigation", () => ({
     throw new Error(`redirect ${to}`);
   },
 }));
-vi.mock("@/lib/env", () => ({ env: { DOSSIER_SECRET: "s".repeat(32), DOSSIER_PASSWORD: "correct horse" } }));
+vi.mock("@/lib/env", () => ({ env: { JOBS_IRELAND_SECRET: "s".repeat(32), JOBS_IRELAND_PASSWORD: "correct horse" } }));
 // React's per-request cache would keep the first answer across tests.
 vi.mock("react", async (importOriginal) => ({ ...(await importOriginal<typeof import("react")>()), cache: <T,>(fn: T) => fn }));
 

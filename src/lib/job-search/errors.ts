@@ -6,7 +6,7 @@ import { SOURCE_INFO } from "./sources";
 // (E14-1). A source's own error text never reaches the screen or the logs.
 
 export type JobSearchProblem =
-  /** The source isn't offered on this server (DOSSIER_JOBS_ARBEITSAGENTUR=off). */
+  /** The source isn't offered on this server (JOBS_IRELAND_JOBS_ARBEITSAGENTUR=off). */
   | "off"
   /** The Bundesagentur für Arbeit's note hasn't been accepted yet (#223). */
   | "not-accepted"

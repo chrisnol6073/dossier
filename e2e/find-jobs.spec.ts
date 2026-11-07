@@ -84,7 +84,7 @@ test("says when nothing was found", async ({ page }) => {
 test("tests the connection in Settings → Job search", async ({ page }) => {
   await page.goto("/settings?section=jobs");
   await expect(page.getByRole("radio", { name: "JSearch" })).toBeChecked();
-  await expect(page.getByLabel("API key")).toHaveAttribute("placeholder", "Using DOSSIER_JSEARCH_KEY · type one to save it here");
+  await expect(page.getByLabel("API key")).toHaveAttribute("placeholder", "Using JOBS_IRELAND_JSEARCH_KEY · type one to save it here");
   await page.getByRole("button", { name: "Test connection" }).click();
   await expect(page.getByText(/^Connected · JSearch answered in/)).toBeVisible();
 });

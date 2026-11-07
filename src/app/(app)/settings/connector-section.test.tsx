@@ -34,7 +34,7 @@ describe("Settings → MCP connector (#221, #281)", () => {
     await user.click(toggle);
     expect(setConnector).toHaveBeenCalledWith({ on: true });
     expect(screen.getByText(ADDRESS)).toBeInTheDocument();
-    expect(screen.getByText(/claude mcp add --transport http dossier https:\/\/dossier\.example\/api\/mcp/)).toBeInTheDocument();
+    expect(screen.getByText(/claude mcp add --transport http jobs-ireland https:\/\/dossier\.example\/api\/mcp/)).toBeInTheDocument();
     // A public HTTPS address needs no warning.
     expect(screen.queryByRole("note")).not.toBeInTheDocument();
 
@@ -54,7 +54,7 @@ describe("Settings → MCP connector (#221, #281)", () => {
 
   it("says Claude on the web and cloud apps need a public HTTPS address, which a local one isn't", () => {
     render(<ConnectorSection initial={{ on: true, redirects: [] }} address="http://localhost:3000/api/mcp" />);
-    expect(screen.getByRole("note")).toHaveTextContent(/This is a local address\. Claude on the web, Desktop and mobile, and apps in the cloud such as n8n Cloud, reach Jobs Ireland from their own servers/);
+    expect(screen.getByRole("note")).toHaveTextContent(/This is a local address: it only works on this computer\. Claude on the web, Desktop and mobile, and apps in the cloud such as n8n Cloud, connect from their own servers/);
   });
 
   it("adds and removes other apps' callback addresses", async () => {

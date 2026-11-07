@@ -103,7 +103,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
       ) : section === "connector" ? (
         <ConnectorSection
           initial={{ on: settings.connectorEnabledAt !== null, redirects: settings.connectorRedirects }}
-          address={mcpUrl(env.DOSSIER_PUBLIC_URL ?? (await requestOrigin()))}
+          address={mcpUrl(env.JOBS_IRELAND_PUBLIC_URL ?? (await requestOrigin()))}
         />
       ) : section === "data" ? (
         <DataSection
@@ -111,7 +111,7 @@ export default async function SettingsPage({ searchParams }: PageProps<"/setting
           exportName={exportFileName()}
           backups={{
             on: settings.nightlyBackup,
-            retentionDays: env.DOSSIER_BACKUP_RETENTION_DAYS,
+            retentionDays: env.JOBS_IRELAND_BACKUP_RETENTION_DAYS,
             dir: backupsDir(),
             lastRun: whenRan(await lastNightlyBackup()),
             problem: settings.backupProblem,
@@ -224,7 +224,7 @@ async function aboutFacts(): Promise<AboutFacts> {
     { label: "Version", value: appVersion },
     { label: "Server", value: host },
     { label: "Database", value: `${sqlite ? "SQLite" : "PostgreSQL"} · ${formatBytes(Number(database.size))}` },
-    { label: "Sign-in", value: "set via DOSSIER_PASSWORD" },
+    { label: "Sign-in", value: "set via JOBS_IRELAND_PASSWORD" },
     { label: "AI", value: [providerOption(ai.provider).name, ai.model].filter(Boolean).join(" · ") },
     { label: "Applications", value: String(applications) },
   ];

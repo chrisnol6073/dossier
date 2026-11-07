@@ -12,9 +12,9 @@ import { env } from "@/lib/env";
 import { deriveKey } from "@/lib/keys";
 
 // Sessions are stateless: the cookie holds an encrypted token (JWE,
-// A256GCM with a key derived from DOSSIER_SECRET), so nothing is stored on
+// A256GCM with a key derived from JOBS_IRELAND_SECRET), so nothing is stored on
 // the server, and tampering or a different secret makes it invalid. Each
-// token also carries a fingerprint of DOSSIER_PASSWORD (the password's
+// token also carries a fingerprint of JOBS_IRELAND_PASSWORD (the password's
 // hash), so changing the password and restarting signs everyone out (AUTH-6).
 
 export const SESSION_COOKIE = "dossier_session";
@@ -33,17 +33,17 @@ export type Session = {
 
 type TokenOptions = {
   key: Uint8Array;
-  /** passwordFingerprint() of the current DOSSIER_PASSWORD. */
+  /** passwordFingerprint() of the current JOBS_IRELAND_PASSWORD. */
   fingerprint: string;
   now?: Date;
 };
 
 /**
- * A short HMAC of DOSSIER_PASSWORD, keyed from DOSSIER_SECRET. It identifies
+ * A short HMAC of JOBS_IRELAND_PASSWORD, keyed from JOBS_IRELAND_SECRET. It identifies
  * the password a session was created with, without revealing it.
  */
 export function passwordFingerprint(
-  password = env.DOSSIER_PASSWORD,
+  password = env.JOBS_IRELAND_PASSWORD,
   key = deriveKey("password-fingerprint"),
 ): string {
   return createHmac("sha256", key).update(password, "utf8").digest("base64url").slice(0, 16);
@@ -96,8 +96,8 @@ export async function decodeSession(
   }
 }
 
-/** Whether `candidate` is the password that DOSSIER_PASSWORD is a hash of. */
-export function passwordMatches(candidate: string, hash = env.DOSSIER_PASSWORD): Promise<boolean> {
+/** Whether `candidate` is the password that JOBS_IRELAND_PASSWORD is a hash of. */
+export function passwordMatches(candidate: string, hash = env.JOBS_IRELAND_PASSWORD): Promise<boolean> {
   return verifyPassword(candidate, hash);
 }
 

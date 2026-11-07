@@ -13,13 +13,13 @@ import type { JobSource, JSearchHost } from "./search";
 import { ARBEITSAGENTUR_NOTE, FREEHIRE_URL, SOURCE_INFO, type JobKeyState, type JobSearchSettingsView } from "./sources";
 
 // Which job source to search, and with which key (E14-4): what's saved in
-// Settings, or else the DOSSIER_JOBS_* variables. Each source keeps its own
+// Settings, or else the JOBS_IRELAND_JOBS_* variables. Each source keeps its own
 // key, so a key only ever goes to the source it's for.
 
 export type JobSearchConfig = {
   /** The source in effect; null while job search is off. */
   source: JobSource | null;
-  /** Whether the choice is saved in Settings, rather than coming from DOSSIER_JOBS_SOURCE. */
+  /** Whether the choice is saved in Settings, rather than coming from JOBS_IRELAND_JOBS_SOURCE. */
   saved: boolean;
   jsearch: { key: string | null; host: JSearchHost; keyState: JobKeyState };
   adzuna: { appId: string; key: string | null; keyState: JobKeyState };
@@ -28,7 +28,7 @@ export type JobSearchConfig = {
    * when its note was accepted. Its searches wait until then.
    */
   arbeitsagentur: { offered: boolean; acceptedAt: string | null };
-  /** The FreeHire to search: freehire.me, or a self-hosted one (DOSSIER_FREEHIRE_URL). */
+  /** The FreeHire to search: freehire.me, or a self-hosted one (JOBS_IRELAND_FREEHIRE_URL). */
   freehire: { url: string };
   /** Jooble keys by country code, "*" for one for any country. */
   jooble: { keys: Record<string, string>; keyState: JobKeyState };
@@ -42,18 +42,18 @@ type SavedJobSettings = Pick<
 >;
 type JobEnv = Pick<
   Env,
-  | "DOSSIER_JOBS_SOURCE"
-  | "DOSSIER_JSEARCH_KEY"
-  | "DOSSIER_JSEARCH_HOST"
-  | "DOSSIER_ADZUNA_APP_ID"
-  | "DOSSIER_ADZUNA_KEY"
-  | "DOSSIER_FREEHIRE_URL"
-  | "DOSSIER_JOBS_ARBEITSAGENTUR"
-  | "DOSSIER_JOOBLE_KEY"
-  | "DOSSIER_COMPANY_BOARDS"
+  | "JOBS_IRELAND_JOBS_SOURCE"
+  | "JOBS_IRELAND_JSEARCH_KEY"
+  | "JOBS_IRELAND_JSEARCH_HOST"
+  | "JOBS_IRELAND_ADZUNA_APP_ID"
+  | "JOBS_IRELAND_ADZUNA_KEY"
+  | "JOBS_IRELAND_FREEHIRE_URL"
+  | "JOBS_IRELAND_JOBS_ARBEITSAGENTUR"
+  | "JOBS_IRELAND_JOOBLE_KEY"
+  | "JOBS_IRELAND_COMPANY_BOARDS"
 >;
 
-const FROM_ENV: Record<NonNullable<Env["DOSSIER_JOBS_SOURCE"]>, JobSource | null> = {
+const FROM_ENV: Record<NonNullable<Env["JOBS_IRELAND_JOBS_SOURCE"]>, JobSource | null> = {
   jsearch: "JSEARCH",
   adzuna: "ADZUNA",
   arbeitsagentur: "ARBEITSAGENTUR",
@@ -98,9 +98,9 @@ export function parseJoobleKeys(text: string): Record<string, string> {
 }
 
 export function resolveJobSearchConfig(saved: SavedJobSettings, source: JobEnv, secret?: string): JobSearchConfig {
-  const jsearchKey = keyOf(saved.jsearchKeyEnc, source.DOSSIER_JSEARCH_KEY, secret);
-  const offered = source.DOSSIER_JOBS_ARBEITSAGENTUR !== "off";
-  const chosen = saved.jobSource ? (saved.jobSource === "OFF" ? null : saved.jobSource) : source.DOSSIER_JOBS_SOURCE ? FROM_ENV[source.DOSSIER_JOBS_SOURCE] : null;
+  const jsearchKey = keyOf(saved.jsearchKeyEnc, source.JOBS_IRELAND_JSEARCH_KEY, secret);
+  const offered = source.JOBS_IRELAND_JOBS_ARBEITSAGENTUR !== "off";
+  const chosen = saved.jobSource ? (saved.jobSource === "OFF" ? null : saved.jobSource) : source.JOBS_IRELAND_JOBS_SOURCE ? FROM_ENV[source.JOBS_IRELAND_JOBS_SOURCE] : null;
   return {
     // A BA choice saved before the server turned it off counts as Off.
     source: chosen === "ARBEITSAGENTUR" && !offered ? null : chosen,
@@ -108,20 +108,20 @@ export function resolveJobSearchConfig(saved: SavedJobSettings, source: JobEnv, 
     jsearch: {
       ...jsearchKey,
       // An environment key goes with the environment's host, when it names one.
-      host: jsearchKey.keyState === "env" && source.DOSSIER_JSEARCH_HOST ? source.DOSSIER_JSEARCH_HOST : saved.jsearchHost,
+      host: jsearchKey.keyState === "env" && source.JOBS_IRELAND_JSEARCH_HOST ? source.JOBS_IRELAND_JSEARCH_HOST : saved.jsearchHost,
     },
     adzuna: {
-      appId: saved.adzunaAppId ?? source.DOSSIER_ADZUNA_APP_ID ?? "",
-      ...keyOf(saved.adzunaKeyEnc, source.DOSSIER_ADZUNA_KEY, secret),
+      appId: saved.adzunaAppId ?? source.JOBS_IRELAND_ADZUNA_APP_ID ?? "",
+      ...keyOf(saved.adzunaKeyEnc, source.JOBS_IRELAND_ADZUNA_KEY, secret),
     },
     arbeitsagentur: { offered, acceptedAt: saved.arbeitsagenturAcceptedAt },
-    freehire: { url: source.DOSSIER_FREEHIRE_URL ?? FREEHIRE_URL },
+    freehire: { url: source.JOBS_IRELAND_FREEHIRE_URL ?? FREEHIRE_URL },
     jooble: (() => {
-      const { key, keyState } = keyOf(saved.joobleKeyEnc, source.DOSSIER_JOOBLE_KEY, secret);
+      const { key, keyState } = keyOf(saved.joobleKeyEnc, source.JOBS_IRELAND_JOOBLE_KEY, secret);
       return { keys: key ? parseJoobleKeys(key) : {}, keyState };
     })(),
     companyBoards: (() => {
-      const text = saved.companyBoards?.trim() || source.DOSSIER_COMPANY_BOARDS?.trim() || "";
+      const text = saved.companyBoards?.trim() || source.JOBS_IRELAND_COMPANY_BOARDS?.trim() || "";
       const boards = text ? parseCompanyBoards(text) : [];
       return boards.length > 0 ? { boards, text, builtIn: false } : { boards: DEFAULT_COMPANY_BOARDS, text: DEFAULT_COMPANY_BOARDS_TEXT, builtIn: true };
     })(),
@@ -135,12 +135,12 @@ export async function loadJobSearchConfig(): Promise<JobSearchConfig> {
 
 /**
  * For the server log at start (#223): the Bundesagentur für Arbeit's note,
- * when DOSSIER_JOBS_SOURCE chooses it rather than Settings; null otherwise.
+ * when JOBS_IRELAND_JOBS_SOURCE chooses it rather than Settings; null otherwise.
  */
 export function arbeitsagenturStartupNotice(config: JobSearchConfig): string | null {
   if (config.source !== "ARBEITSAGENTUR" || config.saved) return null;
   const waiting = config.arbeitsagentur.acceptedAt ? "" : " It isn't searched until you tick “I understand” in Settings → Job search.";
-  return `Job search: DOSSIER_JOBS_SOURCE chooses the Bundesagentur für Arbeit. ${ARBEITSAGENTUR_NOTE}${waiting}`;
+  return `Job search: JOBS_IRELAND_JOBS_SOURCE chooses the Bundesagentur für Arbeit. ${ARBEITSAGENTUR_NOTE}${waiting}`;
 }
 
 /** What Settings → Job search shows: the source and the keys' states, never the keys. */
@@ -158,13 +158,13 @@ export function jobSearchView(config: JobSearchConfig): JobSearchSettingsView {
 
 /**
  * Where a source's requests go: its own address, unless the end-to-end
- * tests point every source at their fake one (DOSSIER_JOBS_TEST_BASE_URL),
- * or FreeHire is pointed at a self-hosted origin (DOSSIER_FREEHIRE_URL).
+ * tests point every source at their fake one (JOBS_IRELAND_JOBS_TEST_BASE_URL),
+ * or FreeHire is pointed at a self-hosted origin (JOBS_IRELAND_FREEHIRE_URL).
  */
 export function requestContext(
   source: JobSource,
-  base = env.DOSSIER_JOBS_TEST_BASE_URL,
-  freehireUrl = env.DOSSIER_FREEHIRE_URL,
+  base = env.JOBS_IRELAND_JOBS_TEST_BASE_URL,
+  freehireUrl = env.JOBS_IRELAND_FREEHIRE_URL,
 ): RequestContext {
   if (base) return { baseUrl: `${base.replace(/\/+$/, "")}/${source.toLowerCase()}` };
   if (source === "FREEHIRE" && freehireUrl) return { baseUrl: freehireUrl };

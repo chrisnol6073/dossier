@@ -26,7 +26,7 @@ type ZipResult = { file: string; fileName: string; documents: number };
 export type BackupStatus = {
   on: boolean;
   retentionDays: number;
-  /** DOSSIER_DATA_DIR/backups */
+  /** JOBS_IRELAND_DATA_DIR/backups */
   dir: string;
   /** "today at 03:00", or null before the first one. */
   lastRun: string | null;

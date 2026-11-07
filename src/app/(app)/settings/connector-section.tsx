@@ -99,15 +99,16 @@ export function ConnectorSection({ initial, address }: { initial: { on: boolean;
               </li>
             </ol>
             <p className="text-meta text-muted">
-              In Claude&apos;s command-line app: <code className="font-mono text-label">claude mcp add --transport http dossier {address}</code>, then{" "}
+              In Claude&apos;s command-line app: <code className="font-mono text-label">claude mcp add --transport http jobs-ireland {address}</code>, then{" "}
               <code className="font-mono text-label">/mcp</code> to sign in.
             </p>
             {!publicHttps && (
               <p role="note" className="rounded-card bg-warning-surface px-4 py-3 text-meta text-warning">
-                {local ? "This is a local address. " : "This address isn't HTTPS. "}
-                Claude on the web, Desktop and mobile, and apps in the cloud such as n8n Cloud, reach Jobs Ireland from their own servers, so they need a public HTTPS
-                address (set <code className="font-mono text-label">DOSSIER_PUBLIC_URL</code> if Jobs Ireland is reached at another one). Claude&apos;s command-line
-                app on the computer Jobs Ireland runs on can use this one.
+                {local ? "This is a local address: it only works on this computer. " : "This address isn't HTTPS. "}
+                Claude on the web, Desktop and mobile, and apps in the cloud such as n8n Cloud, connect from their own servers on the internet, so they can&apos;t
+                reach it. For those, Jobs Ireland needs a public HTTPS address, such as a domain on your own server; put that address in{" "}
+                <code className="font-mono text-label">JOBS_IRELAND_PUBLIC_URL</code>. Claude&apos;s command-line app (Claude Code) on this same computer can use
+                this address as it is.
               </p>
             )}
           </Card>
@@ -173,7 +174,7 @@ export function ConnectorSection({ initial, address }: { initial: { on: boolean;
               <Button variant="secondary" onClick={() => void track(disconnectApps({})).then(toastResult)}>
                 Disconnect all apps
               </Button>
-              <p className="mt-2 text-meta text-muted">Signs Claude and every other app out. Changing your password or DOSSIER_SECRET does too.</p>
+              <p className="mt-2 text-meta text-muted">Signs Claude and every other app out. Changing your password or JOBS_IRELAND_SECRET does too.</p>
             </div>
           </Card>
         </>

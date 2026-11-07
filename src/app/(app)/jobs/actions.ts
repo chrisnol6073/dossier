@@ -23,7 +23,7 @@ import { saveSettings } from "@/lib/settings-data";
 const postingRef = z.object({ source: z.enum(JOB_SOURCES), externalId: z.string().min(1).max(500) });
 const searchId = z.string().min(1).max(100);
 
-/** "I understand" under the Bundesagentur für Arbeit's note (#223), for a BA choice made before it, or by DOSSIER_JOBS_SOURCE. */
+/** "I understand" under the Bundesagentur für Arbeit's note (#223), for a BA choice made before it, or by JOBS_IRELAND_JOBS_SOURCE. */
 export const acceptArbeitsagenturNote = action(z.object({}), async () => {
   const { arbeitsagentur } = await loadJobSearchConfig();
   if (!arbeitsagentur.offered) throw new ActionError("The Bundesagentur für Arbeit isn't offered on this server.");

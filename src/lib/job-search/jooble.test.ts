@@ -7,7 +7,7 @@ import { JobSearchError } from "./errors";
 import { jooble, joobleBody, joobleKeyFor, joobleRadius } from "./jooble";
 import { EMPTY_QUERY } from "./search";
 
-vi.mock("@/lib/env", () => ({ env: { DOSSIER_SECRET: "a".repeat(32) } }));
+vi.mock("@/lib/env", () => ({ env: { JOBS_IRELAND_SECRET: "a".repeat(32) } }));
 vi.mock("@/lib/posting-fetch", () => ({ fetchPosting: vi.fn() }));
 
 const query = { ...EMPTY_QUERY, keywords: "QA Engineer", country: "ie" };

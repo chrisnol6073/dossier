@@ -1,4 +1,4 @@
-// Prints a hash of a password, for DOSSIER_PASSWORD. In the image:
+// Prints a hash of a password, for JOBS_IRELAND_PASSWORD. In the image:
 //
 //   docker run --rm -it dossier-europe:local hash-password
 //
@@ -67,7 +67,7 @@ async function readPassword(): Promise<string> {
 async function main() {
   try {
     const hash = await hashPassword(await readPassword());
-    process.stderr.write("Set DOSSIER_PASSWORD to this, then restart Jobs Ireland:\n");
+    process.stderr.write("Set JOBS_IRELAND_PASSWORD to this, then restart Jobs Ireland:\n");
     process.stdout.write(`${hash}\n`);
   } catch (error) {
     if (!(error instanceof Cancelled)) process.stderr.write(`${(error as Error).message}\n`);

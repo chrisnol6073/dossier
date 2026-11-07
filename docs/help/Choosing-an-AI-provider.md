@@ -10,9 +10,9 @@ Or open **Settings → AI provider**, pick one, and press **Test connection**:
 
 A subscription to ChatGPT Plus, Claude Pro or a Google AI plan doesn't include API use: the API is paid for separately, as credit you buy first. Free hosted tiers aren't recommended for Jobs Ireland. On Gemini's free tier, Google may use what you send to improve its products and people may read it, and Mistral's free mode may train on it too; resumes don't belong there. Jobs Ireland's free and private choice is a model on your own computer.
 
-API keys are stored encrypted with `DOSSIER_SECRET` and never sent back to the browser. **Never invent experience** (on by default) keeps drafts to facts from your profile and flags anything it can't find there.
+API keys are stored encrypted with `JOBS_IRELAND_SECRET` and never sent back to the browser. **Never invent experience** (on by default) keeps drafts to facts from your profile and flags anything it can't find there.
 
-You can also set the provider with the `DOSSIER_AI_*` [environment variables](Environment-variables.md); a choice saved in Settings wins.
+You can also set the provider with the `JOBS_IRELAND_AI_*` [environment variables](Environment-variables.md); a choice saved in Settings wins.
 
 ## OpenAI
 
@@ -74,11 +74,11 @@ docker compose up -d
 docker compose exec ollama ollama pull qwen2.5:7b
 ```
 
-Then, in **Settings → AI provider → Local model**, set the server address to `http://ollama:11434`, pick the model and press **Test connection**. Or set `DOSSIER_AI_PROVIDER=local`, `DOSSIER_AI_URL=http://ollama:11434` and `DOSSIER_AI_MODEL=qwen2.5:7b` in `.env`.
+Then, in **Settings → AI provider → Local model**, set the server address to `http://ollama:11434`, pick the model and press **Test connection**. Or set `JOBS_IRELAND_AI_PROVIDER=local`, `JOBS_IRELAND_AI_URL=http://ollama:11434` and `JOBS_IRELAND_AI_MODEL=qwen2.5:7b` in `.env`.
 
 On CapRover, Coolify or Dokploy, the guide for it shows how to run Ollama there: see [Self-host on a server](Home#self-host-on-a-server).
 
-**Which model:** `qwen2.5:7b` is a good start: a 4.7 GB download that needs about 6 GB of memory with Jobs Ireland's 16k-token context. On a smaller server, `qwen2.5:3b` (2 GB, about 3 GB of memory) works, with plainer writing. Models that think before they answer, such as `qwen3.5:4b`, work too: Jobs Ireland has Ollama's models answer without thinking first. These are suggestions, not yet benchmarked. On a CPU, reading a posting takes a minute or two and a whole new application several minutes, so the local timeout is 5 minutes per request (`DOSSIER_AI_TIMEOUT_SECONDS`); 4 or more cores help, a GPU much more.
+**Which model:** `qwen2.5:7b` is a good start: a 4.7 GB download that needs about 6 GB of memory with Jobs Ireland's 16k-token context. On a smaller server, `qwen2.5:3b` (2 GB, about 3 GB of memory) works, with plainer writing. Models that think before they answer, such as `qwen3.5:4b`, work too: Jobs Ireland has Ollama's models answer without thinking first. These are suggestions, not yet benchmarked. On a CPU, reading a posting takes a minute or two and a whole new application several minutes, so the local timeout is 5 minutes per request (`JOBS_IRELAND_AI_TIMEOUT_SECONDS`); 4 or more cores help, a GPU much more.
 
 **Ollama elsewhere:** on another machine in your network, use `http://<its address>:11434`, and start Ollama there with `OLLAMA_HOST=0.0.0.0` so it listens beyond localhost. For Ollama installed on the same server outside Docker, use `http://host.docker.internal:11434`, which `compose.yml` points at the server; Ollama then has to listen beyond localhost too, so make sure your firewall keeps port 11434 closed to the internet. Inside a container, `localhost` is the container itself, never the server.
 
@@ -92,7 +92,7 @@ Pick a model from the list; embedding models aren't offered. When it isn't loade
 
 **Score** in Find jobs and the job agent use your AI model to judge how well a posting fits you. In **Settings → Scoring** you can choose **Jev by TypeSafe** instead: a model made for quick judgments, with a TypeSafe key of your own from [TypeSafe's console](https://console.typesafe.ai/keys). Jev answers questions about the posting, and Jobs Ireland builds the score from them. The reasons quote the posting's own lines: "Covers: …" for what your profile shows, "Missing: …" for what it doesn't. Drafts are still written by your AI model.
 
-Each posting you score goes to TypeSafe with your profile, without your name, contact details or references (see [Privacy](Privacy.md)). Jev reads English best, so it judges postings in other languages less well. `DOSSIER_SCORER` and `DOSSIER_TYPESAFE_KEY` set the defaults (see [Environment variables](Environment-variables.md)).
+Each posting you score goes to TypeSafe with your profile, without your name, contact details or references (see [Privacy](Privacy.md)). Jev reads English best, so it judges postings in other languages less well. `JOBS_IRELAND_SCORER` and `JOBS_IRELAND_TYPESAFE_KEY` set the defaults (see [Environment variables](Environment-variables.md)).
 
 
 ---

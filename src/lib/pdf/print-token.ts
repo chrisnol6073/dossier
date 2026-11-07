@@ -5,7 +5,7 @@ import { jwtVerify, SignJWT } from "jose";
 import { deriveKey } from "@/lib/keys";
 
 // Headless Chromium has no session cookie. It reaches a print page with a
-// short-lived token instead, signed with a key derived from DOSSIER_SECRET
+// short-lived token instead, signed with a key derived from JOBS_IRELAND_SECRET
 // and bound to that one page, sent in a request header so it never shows up
 // in a URL or a log.
 

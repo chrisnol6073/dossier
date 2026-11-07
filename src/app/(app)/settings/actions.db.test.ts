@@ -42,7 +42,7 @@ vi.mock("@/lib/prisma", async () => {
 vi.mock("@/lib/auth/session", () => ({
   getSession: async () => ({ persistent: false, issuedAt: new Date(), expiresAt: new Date(Date.now() + 60_000) }),
 }));
-vi.mock("@/lib/env", () => ({ env: { DOSSIER_SECRET: "a".repeat(32) } }));
+vi.mock("@/lib/env", () => ({ env: { JOBS_IRELAND_SECRET: "a".repeat(32) } }));
 // The real config and key handling, with a mock model behind them.
 const provider = vi.hoisted(() => ({ current: undefined as unknown }));
 vi.mock("@/lib/ai", async (importOriginal) => ({

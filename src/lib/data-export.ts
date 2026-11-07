@@ -367,7 +367,7 @@ export function exportFileName(now = new Date()): string {
 /**
  * Collects everything into an export (E10-4). The API key is left out,
  * unless `includeApiKey`: then it's decrypted, since another server's
- * DOSSIER_SECRET couldn't read the encrypted copy (PRD §11). One read-only
+ * JOBS_IRELAND_SECRET couldn't read the encrypted copy (PRD §11). One read-only
  * transaction, so the export is a consistent snapshot. Also used for
  * backups (E10-6, E10-7).
  */
@@ -411,7 +411,7 @@ export async function buildExport(
       tx.startupBlock.findMany({ orderBy: { createdAt: "asc" } }),
     ]);
 
-    // Keys only when asked for, decrypted; one that's unreadable here too (DOSSIER_SECRET changed) has nothing to export.
+    // Keys only when asked for, decrypted; one that's unreadable here too (JOBS_IRELAND_SECRET changed) has nothing to export.
     const stored = (key: string) => (includeApiKey ? settings.find((setting) => setting.key === key)?.value : undefined);
     const readable = (value: string | undefined, decrypt: (value: string) => string) => {
       try {

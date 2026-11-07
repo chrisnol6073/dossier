@@ -13,7 +13,7 @@ export const FAKE_AI_PORT = 3999;
 export const FAKE_JOBS_PORT = 3998;
 export const FAKE_GOOGLE_PORT = 3997;
 export const PASSWORD = "e2e-password";
-/** DOSSIER_PASSWORD for the run: `printf 'e2e-password' | yarn hash-password`. */
+/** JOBS_IRELAND_PASSWORD for the run: `printf 'e2e-password' | yarn hash-password`. */
 const PASSWORD_HASH = "argon2id:m=19456,t=2,p=1:wk-0a22NLDwpNVDMxLY9rw:x4bAXEh9EtlaTIqLiHwF_omyDOpcPtwPrV0_SJx_y2c";
 export const STORAGE_STATE = "e2e/.auth/state.json";
 
@@ -37,27 +37,27 @@ export function e2eDatabaseUrl(): string {
 export function appEnv(): Record<string, string> {
   return {
     DATABASE_URL: e2eDatabaseUrl(),
-    DOSSIER_PASSWORD: PASSWORD_HASH,
-    DOSSIER_SECRET: "e2e-secret-e2e-secret-e2e-secret-e2e",
-    DOSSIER_DATA_DIR: "/tmp/dossier-e2e",
-    DOSSIER_AI_PROVIDER: "openai",
-    DOSSIER_AI_URL: `http://localhost:${FAKE_AI_PORT}/v1`,
-    DOSSIER_AI_MODEL: "fake-model",
-    DOSSIER_AI_KEY: "e2e-fake-key",
+    JOBS_IRELAND_PASSWORD: PASSWORD_HASH,
+    JOBS_IRELAND_SECRET: "e2e-secret-e2e-secret-e2e-secret-e2e",
+    JOBS_IRELAND_DATA_DIR: "/tmp/dossier-e2e",
+    JOBS_IRELAND_AI_PROVIDER: "openai",
+    JOBS_IRELAND_AI_URL: `http://localhost:${FAKE_AI_PORT}/v1`,
+    JOBS_IRELAND_AI_MODEL: "fake-model",
+    JOBS_IRELAND_AI_KEY: "e2e-fake-key",
     // Find jobs searches the fake job sources (E14-9).
-    DOSSIER_JOBS_SOURCE: "jsearch",
-    DOSSIER_JSEARCH_KEY: "e2e-jsearch-key",
-    DOSSIER_JOBS_TEST_BASE_URL: `http://localhost:${FAKE_JOBS_PORT}`,
+    JOBS_IRELAND_JOBS_SOURCE: "jsearch",
+    JOBS_IRELAND_JSEARCH_KEY: "e2e-jsearch-key",
+    JOBS_IRELAND_JOBS_TEST_BASE_URL: `http://localhost:${FAKE_JOBS_PORT}`,
     // Google's sign-in, Gmail and Calendar are the fake Google's (E15). It's
     // only used once a spec enters an OAuth client in Settings → Google.
-    DOSSIER_GOOGLE_TEST_BASE_URL: `http://localhost:${FAKE_GOOGLE_PORT}`,
+    JOBS_IRELAND_GOOGLE_TEST_BASE_URL: `http://localhost:${FAKE_GOOGLE_PORT}`,
     // A production server, so it would ask GitHub for the latest release daily.
-    DOSSIER_UPDATES_TEST_BASE_URL: `http://localhost:${FAKE_JOBS_PORT}/github`,
+    JOBS_IRELAND_UPDATES_TEST_BASE_URL: `http://localhost:${FAKE_JOBS_PORT}/github`,
     // A production server asks whether to send the usage ping (#172); resetData
     // answers no, and a yes sends it to the fake job sources, never the project.
-    DOSSIER_USAGE_PING_TEST_URL: `http://localhost:${FAKE_JOBS_PORT}/ping`,
+    JOBS_IRELAND_USAGE_PING_TEST_URL: `http://localhost:${FAKE_JOBS_PORT}/ping`,
     // Jev is the fake job sources' too, once a spec chooses it in Settings → Scoring (#274).
-    DOSSIER_TYPESAFE_TEST_BASE_URL: `http://localhost:${FAKE_JOBS_PORT}/typesafe`,
+    JOBS_IRELAND_TYPESAFE_TEST_BASE_URL: `http://localhost:${FAKE_JOBS_PORT}/typesafe`,
     PORT: String(APP_PORT),
   };
 }

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const env = vi.hoisted(() => ({ DOSSIER_SECRET: "s".repeat(40), DOSSIER_PASSWORD: "argon2id:m=19456,t=2,p=1:c2FsdA:aGFzaA" }));
+const env = vi.hoisted(() => ({ JOBS_IRELAND_SECRET: "s".repeat(40), JOBS_IRELAND_PASSWORD: "argon2id:m=19456,t=2,p=1:c2FsdA:aGFzaA" }));
 vi.mock("@/lib/env", () => ({ env }));
 const settings = vi.hoisted(() => ({ connectorEnabledAt: "2026-10-23T09:00:00.000Z" as string | null, connectorRedirects: ["https://n8n.example/rest/oauth2-credential/callback"] }));
 vi.mock("@/lib/settings-data", () => ({ loadSettings: async () => settings }));
@@ -32,7 +32,7 @@ async function signIn(redirectUri = CLAUDE) {
 
 beforeEach(() => {
   settings.connectorEnabledAt = "2026-10-23T09:00:00.000Z";
-  env.DOSSIER_PASSWORD = "argon2id:m=19456,t=2,p=1:c2FsdA:aGFzaA";
+  env.JOBS_IRELAND_PASSWORD = "argon2id:m=19456,t=2,p=1:c2FsdA:aGFzaA";
 });
 
 describe("the Claude connector's sign-in (#221)", () => {
@@ -132,7 +132,7 @@ describe("the Claude connector's sign-in (#221)", () => {
     settings.connectorEnabledAt = "2026-10-23T11:00:00.000Z";
     const again = await signIn();
     const againTokens = await exchangeCode({ code: again.code, clientId: again.clientId, redirectUri: CLAUDE, verifier: VERIFIER });
-    env.DOSSIER_PASSWORD = "argon2id:m=19456,t=2,p=1:c2FsdA:bmV3";
+    env.JOBS_IRELAND_PASSWORD = "argon2id:m=19456,t=2,p=1:c2FsdA:bmV3";
     expect(await verifyAccessToken(againTokens.access_token)).toBeNull();
   });
 

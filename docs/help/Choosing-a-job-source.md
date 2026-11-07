@@ -10,7 +10,7 @@ Germany's Bundesagentur für Arbeit is there too, as an [unofficial source](#bun
 
 The search starts from your profile's city, country and current role; change the place, radius (10 to 200 km, except on FreeHire), how recent and Remote only as you like. Every search is kept with what it found until you remove it, under **Past searches**, so going back to one, or reloading, doesn't spend another search.
 
-You can also set the source and its keys with the `DOSSIER_JOBS_SOURCE`, `DOSSIER_JSEARCH_*` and `DOSSIER_ADZUNA_*` [environment variables](Environment-variables.md); a choice saved in Settings wins.
+You can also set the source and its keys with the `JOBS_IRELAND_JOBS_SOURCE`, `JOBS_IRELAND_JSEARCH_*` and `JOBS_IRELAND_ADZUNA_*` [environment variables](Environment-variables.md); a choice saved in Settings wins.
 
 ## FreeHire
 
@@ -19,7 +19,7 @@ You can also set the source and its keys with the `DOSSIER_JOBS_SOURCE`, `DOSSIE
 - It has no distance filter. The place you enter puts postings there first, and the rest of the country follows, so **Within** is off while FreeHire is chosen.
 - The job agent can search it.
 - Its free use, without a key, is for your own job search: a Jobs Ireland you run for yourself. If you host Jobs Ireland for other people, FreeHire's [terms](https://freehire.me/terms) ask for one of its API plans.
-- If you run your own FreeHire, set `DOSSIER_FREEHIRE_URL` to its address, such as `https://jobs.example.com`, and Jobs Ireland searches it instead of freehire.me.
+- If you run your own FreeHire, set `JOBS_IRELAND_FREEHIRE_URL` to its address, such as `https://jobs.example.com`, and Jobs Ireland searches it instead of freehire.me.
 
 ## Bundesagentur für Arbeit (unofficial)
 
@@ -27,10 +27,10 @@ Germany's federal job board, with whole postings, free and without a key. It has
 
 So it's your own choice, made knowingly:
 
-- When you pick it in **Settings → Job search**, Jobs Ireland shows that note, and saves the choice only once you tick **I understand, and choose this source myself**. If you chose it before Jobs Ireland 1.9.0, or with `DOSSIER_JOBS_SOURCE=arbeitsagentur`, it isn't searched until you tick the note, in Settings or on Find jobs. With the environment variable, the note is also written to the log when Jobs Ireland starts.
+- When you pick it in **Settings → Job search**, Jobs Ireland shows that note, and saves the choice only once you tick **I understand, and choose this source myself**. If you chose it before Jobs Ireland 1.9.0, or with `JOBS_IRELAND_JOBS_SOURCE=arbeitsagentur`, it isn't searched until you tick the note, in Settings or on Find jobs. With the environment variable, the note is also written to the log when Jobs Ireland starts.
 - The [job agent](#job-agent) never searches it, since it searches on its own. Choose JSearch, Adzuna or FreeHire for the agent.
 - Each posting links to its ad on arbeitsagentur.de, next to the employer's own link when it has one.
-- `DOSSIER_JOBS_ARBEITSAGENTUR=off` takes it out of Jobs Ireland altogether: Settings doesn't offer it, a saved choice counts as Off, and saved postings from it don't fetch their text any more.
+- `JOBS_IRELAND_JOBS_ARBEITSAGENTUR=off` takes it out of Jobs Ireland altogether: Settings doesn't offer it, a saved choice counts as Off, and saved postings from it don't fetch their text any more.
 
 ## Job agent
 

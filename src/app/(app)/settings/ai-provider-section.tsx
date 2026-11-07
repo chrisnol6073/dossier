@@ -250,7 +250,7 @@ export function AiProviderSection({ initial }: { initial: AiSettingsView }) {
                 keyState === "set"
                   ? "Saved · type a new key to replace it"
                   : keyState === "env"
-                    ? "Using DOSSIER_AI_KEY · type one to save it here"
+                    ? "Using JOBS_IRELAND_AI_KEY · type one to save it here"
                     : "Stored encrypted on your server"
               }
               error={keyState === "unreadable" ? API_KEY_UNREADABLE : undefined}

@@ -20,8 +20,8 @@ vi.mock("@/lib/prisma", async () => {
   db.client = createTestClient();
   return { prisma: db.client };
 });
-// Settings → Scoring reads DOSSIER_SCORER (#274).
-vi.mock("@/lib/env", () => ({ env: { DOSSIER_SECRET: "a".repeat(32) } }));
+// Settings → Scoring reads JOBS_IRELAND_SCORER (#274).
+vi.mock("@/lib/env", () => ({ env: { JOBS_IRELAND_SECRET: "a".repeat(32) } }));
 // Drafts are their own jobs; here it's enough to see them queued.
 vi.mock("@/lib/jobs/runner", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/jobs/runner")>()),

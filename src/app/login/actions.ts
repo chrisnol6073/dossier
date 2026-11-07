@@ -16,7 +16,7 @@ import { loadProfileName } from "@/lib/profile-data";
 import { loginMessages } from "./messages";
 
 /**
- * Signs in with the password that DOSSIER_PASSWORD is a hash of (PRD AUTH-1, AUTH-4).
+ * Signs in with the password that JOBS_IRELAND_PASSWORD is a hash of (PRD AUTH-1, AUTH-4).
  * Failed attempts are rate-limited per IP and globally (AUTH-5). Returns
  * where to go next: the requested page if it's on this site, or the dashboard.
  */
